@@ -1,4 +1,5 @@
 import numpy as np
+from bezier_builder.utils import unit_vector
 
 class AnchorPoint:
    
@@ -19,6 +20,16 @@ class AnchorPoint:
         
         self._handle_type = handle_type
 
+        if self._handle_type == "corner":
+            return
+
+        # For aligned and symmetrical align self._handle_out direction to self._handle_in
+        direction = -1 * unit_vector(self._handle_in)
+
+        # If handles are symmetrical set the length of self_handle_out to the magnitude of self._handle_in
+        magnitude = np.linalg.norm(self._handle_in) if self.handle_type == "symmetrical" else np.linalg.norm(self._handle_out)
+        self._handle_out = direction * magnitude
+
     @property
     def pos(self) -> np.ndarray:
         return self._pos
@@ -32,3 +43,14 @@ class AnchorPoint:
             raise TypeError(f"Invalid type for position. Expected numpy array, got {type(pos)}.")
 
         self._pos = pos.astype(np.float32)
+
+    def reset_handles(self):
+        self._handle_in = np.array([0, 0])
+        self._handle_out = np.array([0, 0])
+
+    def __repr__(self):
+        return (f"AnchorPoint(pos=({str(self._pos[0])}, {str(self._pos[1])}, "
+                f"in=({str(self._handle_in[0])}, {str(self._handle_in[1])}), "
+                f"out=({self._handle_out[0]}, {self._handle_out[1]}), "
+                f"handle_type='{self._handle_type}' )"
+                )
