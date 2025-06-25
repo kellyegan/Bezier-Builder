@@ -5,6 +5,8 @@ class AnchorPoint:
     def __init__(self, x=0.0, y=0.0):
       self._handle_type = "corner"
       self._pos = np.array([x, y], dtype=np.float32)
+      self._handle_in = np.array([0, 0], dtype=np.float32)
+      self._handle_out = np.array([0, 0], dtype=np.float32)
 
     @property
     def handle_type(self) -> str:
@@ -23,6 +25,9 @@ class AnchorPoint:
     
     @pos.setter
     def pos(self, pos: np.ndarray):
+        if isinstance(pos, list):
+            pos = np.array(pos)
+        
         if not isinstance(pos, np.ndarray):
             raise TypeError(f"Invalid type for position. Expected numpy array, got {type(pos)}.")
 
