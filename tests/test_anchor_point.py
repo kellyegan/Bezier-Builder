@@ -45,6 +45,18 @@ def test_pos_setter_type_conversion(anchor):
     assert anchor.pos.dtype == np.float32
     np.testing.assert_array_equal(anchor.pos, np.array([100.0, 200.0]))
 
+def test_handle_in_setter_type_conversion(anchor):
+    """Tests that the pos setter correctly converts lists/tuples to float32 ndarray."""
+    anchor.handle_in = [100, 200]  # Set with a list of ints
+    assert anchor.handle_in.dtype == np.float32
+    np.testing.assert_array_equal(anchor.handle_in, np.array([100.0, 200.0]))
+
+def test_handle_out_setter_type_conversion(anchor):
+    """Tests that the pos setter correctly converts lists/tuples to float32 ndarray."""
+    anchor.handle_out = [100, 200]  # Set with a list of ints
+    assert anchor.handle_out.dtype == np.float32
+    np.testing.assert_array_equal(anchor.handle_out, np.array([100.0, 200.0]))
+
 # Test handle type logic
 
 def test_handle_type_symmetrical(anchor):

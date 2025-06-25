@@ -36,13 +36,38 @@ class AnchorPoint:
     
     @pos.setter
     def pos(self, pos: np.ndarray):
-        if isinstance(pos, list):
-            pos = np.array(pos)
+        pos = np.array(pos)
         
         if not isinstance(pos, np.ndarray):
             raise TypeError(f"Invalid type for position. Expected numpy array, got {type(pos)}.")
 
         self._pos = pos.astype(np.float32)
+
+    @property
+    def handle_in(self) -> np.ndarray:
+        return self._handle_in
+    
+    @handle_in.setter
+    def handle_in(self, handle_in: np.ndarray):
+        handle_in = np.array(handle_in)
+        
+        if not isinstance(handle_in, np.ndarray):
+            raise TypeError(f"Invalid type for position. Expected numpy array, got {type(handle_in)}.")
+
+        self._handle_in = handle_in.astype(np.float32)
+
+    @property
+    def handle_out(self) -> np.ndarray:
+        return self._handle_out
+    
+    @handle_out.setter
+    def handle_out(self, handle_out: np.ndarray):
+        handle_out = np.array(handle_out)
+        
+        if not isinstance(handle_out, np.ndarray):
+            raise TypeError(f"Invalid type for position. Expected numpy array, got {type(handle_out)}.")
+
+        self._handle_out = handle_out.astype(np.float32)
 
     def reset_handles(self):
         self._handle_in = np.array([0, 0])
