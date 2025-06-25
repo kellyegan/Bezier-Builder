@@ -15,3 +15,5 @@ def test_initialize_defaults(anchor):
     Test that the initialize method sets default values for x and y coordinates.
     """
     assert anchor.handle_type == "corner"
+    np.testing.assert_array_equal(anchor.pos, np.array([0.0, 0.0]))
+    
