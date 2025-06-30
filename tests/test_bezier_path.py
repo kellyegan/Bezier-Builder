@@ -25,13 +25,30 @@ def test_add_point(path: BezierPath):
     path.add_point(point)
     assert len(path.anchors) == 1
 
-def test_create_point(path: BezierPath):
+def test_create_point_defaults(path: BezierPath):
     assert len(path.anchors) == 0
-    path.create_point(pos=(1.0,51.0), handle_in=(7.0,20.5), handle_out=(40.0,60.0), type="aligned")
+    path.create_point()
     assert len(path.anchors) == 1
     point = path.anchors[-1]
     assert isinstance(point, AnchorPoint)
-    np.testing.assert_array_equal(point.pos, np.array([1.0, 51.0]))
-    np.testing.assert_array_equal(point.handle_in, np.array([7.0,20.5]))
-    np.testing.assert_array_equal(point.handle_out, np.array([40.0,60.0]))
+    np.testing.assert_array_equal(point.pos, np.array([0,0]))
+    np.testing.assert_array_equal(point.handle_in, np.array([0,0]))
+    np.testing.assert_array_equal(point.handle_out, np.array([0,0]))
+    assert point.handle_type == "corner"
+
+def test_create_point(path: BezierPath):
+    path.create_point(pos=(1,2), handle_in=(-.5,-1), handle_out=(2,4), type="aligned")
+    point = path.anchors[-1]
+    assert isinstance(point, AnchorPoint)
+    np.testing.assert_array_equal(point.pos, np.array([1,2]))
+    np.testing.assert_array_equal(point.handle_in, np.array([-0.5,-1]))
+    np.testing.assert_array_equal(point.handle_out, np.array([2,4]))
     assert point.handle_type == "aligned"
+
+    path.create_point(pos=(0,0), handle_in=(-1,-2), handle_out=(1,2), type="symmetrical")
+    point = path.anchors[-1]
+    assert isinstance(point, AnchorPoint)
+    np.testing.assert_array_equal(point.pos, np.array([0,0]))
+    np.testing.assert_array_equal(point.handle_in, np.array([-1,-2]))
+    np.testing.assert_array_equal(point.handle_out, np.array([1,2]))
+    assert point.handle_type == "symmetrical"
