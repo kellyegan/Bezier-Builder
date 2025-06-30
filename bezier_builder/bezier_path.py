@@ -33,3 +33,6 @@ class BezierPath:
         self.anchor_points.append(point)
         pass
 
+    def __repr__(self):
+        return f"BezierPath(points={len(self._anchor_points)}, is_closed={self.is_closed})"
+
