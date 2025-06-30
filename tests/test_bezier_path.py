@@ -17,7 +17,7 @@ def test_initialize(path: BezierPath):
     """
     assert path != None
     assert isinstance(path.anchors, list)
-    assert path.closed == False
+    assert path.is_closed == False
 
 def test_add_point(path: BezierPath):
     assert len(path.anchors) == 0

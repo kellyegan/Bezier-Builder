@@ -3,7 +3,7 @@ from bezier_builder.anchor_point import AnchorPoint
 class BezierPath:
     def __init__(self):
         self._anchors = []
-        self._closed = False
+        self._is_closed = False
 
     @property
     def anchors(self) -> list:
@@ -14,8 +14,12 @@ class BezierPath:
         self._anchors = anchors
 
     @property
-    def closed(self) -> bool:
-        return self._closed
+    def is_closed(self) -> bool:
+        return self._is_closed
+    
+    @is_closed.setter
+    def is_closed(self, is_closed:bool):
+        self._is_closed = is_closed
     
     def add_point(self, anchor):
         self._anchors.append(anchor)
@@ -28,3 +32,5 @@ class BezierPath:
         point.handle_type = type
         self.anchors.append(point)
         pass
+
+    
