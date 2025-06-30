@@ -20,6 +20,25 @@ class BezierPath:
     @is_closed.setter
     def is_closed(self, is_closed:bool):
         self._is_closed = is_closed
+
+    @property
+    def start(self) -> AnchorPoint:
+        if len(self._anchor_points) > 0:
+            return self._anchor_points[0]
+        return None
+        
+    @property
+    def end(self) -> AnchorPoint:
+        if len(self._anchor_points) > 0:
+           return self._anchor_points[-1]
+        return None
+        
+    @property
+    def previous(self) -> AnchorPoint:
+        if len(self._anchor_points) > 1:
+            return self._anchor_points[-2]
+        return None
+
     
     def add_point(self, anchor):
         self._anchor_points.append(anchor)

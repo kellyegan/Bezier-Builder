@@ -52,3 +52,26 @@ def test_create_point(path: BezierPath):
     np.testing.assert_array_equal(point.handle_in, np.array([-1,-2]))
     np.testing.assert_array_equal(point.handle_out, np.array([1,2]))
     assert point.handle_type == "symmetrical"
+
+def test_start_end_previous_points():
+    path = BezierPath()
+    assert path.start is None, "Expected start to be None when no anchors in path"
+    assert path.end is None, "Expected end to be None when no anchors in path"
+    assert path.previous is None, "Expected previous to be None when no anchors in path"
+    path.create_point(pos=(0,0))
+    assert isinstance(path.start, AnchorPoint)
+    assert path.start is path.end, "Expected start and end to be the same point"
+    assert path.previous is None, "Expected previous to be None when only 1 point in path"
+    path.create_point(pos=(15,20))
+    assert isinstance(path.start, AnchorPoint)
+    np.testing.assert_array_equal(path.start.pos, np.array([0,0]))
+    assert isinstance(path.end, AnchorPoint)
+    np.testing.assert_array_equal(path.end.pos, np.array([15,20]))
+    assert path.start is path.previous, "Expected start to be previous when only 2 points in path"
+    path.create_point(pos=(35,40))
+    assert isinstance(path.start, AnchorPoint)
+    np.testing.assert_array_equal(path.start.pos, np.array([0,0]))
+    assert isinstance(path.previous, AnchorPoint)
+    np.testing.assert_array_equal(path.previous.pos, np.array([15,20]))
+    assert isinstance(path.end, AnchorPoint)
+    np.testing.assert_array_equal(path.end.pos, np.array([35,40]))
