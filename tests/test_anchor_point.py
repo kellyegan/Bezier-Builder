@@ -18,9 +18,9 @@ def test_initialize_defaults(anchor):
     Test that the initialize method sets default values for x and y coordinates.
     """
     assert anchor.handle_type == "corner"
-    np.testing.assert_array_equal(anchor.pos, np.array([0.0, 0.0]))
-    np.testing.assert_array_equal(anchor._handle_in, np.array([0.0, 0.0]))
-    np.testing.assert_array_equal(anchor._handle_out, np.array([0.0, 0.0]))
+    np.testing.assert_array_equal(anchor.pos, Vector(0.0, 0.0))
+    np.testing.assert_array_equal(anchor._handle_in, Vector(0.0, 0.0))
+    np.testing.assert_array_equal(anchor._handle_out, Vector(0.0, 0.0))
     
 def test_initialize_with_args():
     """Tests initialization with specific coordinates."""
@@ -74,8 +74,8 @@ def test_handle_type_corner(anchor):
     # 'corner' is the default, but we set it explicitly to be sure
     anchor.handle_type = "corner"
     
-    handle_in_val = np.array([10, 20])
-    handle_out_val = np.array([-30, 40])
+    handle_in_val = Vector(10, 20)
+    handle_out_val = Vector(-30, 40)
     
     anchor._handle_in = handle_in_val
     anchor._handle_out = handle_out_val
@@ -95,36 +95,36 @@ def test_invalid_handle_type_raises_value_error(anchor):
 
 def test_handle_type_change_with_zero_vector(anchor):
     """Tests alignment logic when the source handle is a zero vector."""
-    anchor._handle_in = np.array([0.0, 0.0])
-    anchor._handle_out = np.array([10.0, 10.0]) # Give handle_out a value
+    anchor._handle_in = Vector(0.0, 0.0)
+    anchor._handle_out = Vector(10.0, 10.0) # Give handle_out a value
     
     anchor.handle_type = "symmetric"
     
     # If handle_in is zero, handle_out should also become zero
-    np.testing.assert_allclose(anchor._handle_out, np.array([0.0, 0.0]))
+    np.testing.assert_allclose(anchor._handle_out, Vector(0.0, 0.0))
 
 def test_state_transition_to_corner(anchor):
     """Tests that handles become independent after switching back to 'corner'."""
     # 1. First, make them symmetric and linked
-    anchor._handle_in = np.array([10, 10])
+    anchor._handle_in = Vector(10, 10)
     anchor.handle_type = "symmetric"
-    np.testing.assert_allclose(anchor._handle_out, np.array([-10, -10]))
+    np.testing.assert_allclose(anchor._handle_out, Vector(-10, -10))
     
     # 2. Switch back to corner
     anchor.handle_type = "corner"
     
     # 3. Modify handle_in and verify handle_out is NOT affected
     original_out = anchor._handle_out.copy()
-    anchor._handle_in = np.array([50, 50]) # New value for handle_in
+    anchor._handle_in = Vector(50, 50) # New value for handle_in
     
     np.testing.assert_allclose(anchor._handle_out, original_out)
 
 def test_reset_handles(anchor):
     """Tests that the reset_handles method works correctly."""
-    anchor._handle_in = np.array([10, 20])
-    anchor._handle_out = np.array([30, 40])
+    anchor._handle_in = Vector(10, 20)
+    anchor._handle_out = Vector(30, 40)
     
     anchor.reset_handles()
     
-    np.testing.assert_array_equal(anchor._handle_in, np.array([0, 0]))
-    np.testing.assert_array_equal(anchor._handle_out, np.array([0, 0]))
+    np.testing.assert_array_equal(anchor._handle_in, Vector(0, 0))
+    np.testing.assert_array_equal(anchor._handle_out, Vector(0, 0))

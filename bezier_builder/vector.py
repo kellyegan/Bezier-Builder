@@ -38,4 +38,14 @@ class Vector(np.ndarray):
         magnitude = self.magnitude()
         return self / magnitude if magnitude != 0 else self
     
+    def is_parallel_to(self, other: 'Vector', tolerance=1e-6) -> bool:
+        if len(self) != len(other):
+            raise ValueError("Vectors must have the same dimension")
+        
+        cross_product = self.x * other.y - self.y * other.x
+        return np.isclose(cross_product, 0.0, atol=tolerance).item()
+        
+        
+        
+        
     

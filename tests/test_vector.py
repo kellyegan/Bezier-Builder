@@ -44,4 +44,9 @@ def test_normalize(vector):
     desired_vector = Vector(3 /5, 4 / 5)
     np.testing.assert_almost_equal(result, desired_vector)
     
-
+def test_parallel():
+    vector1 = Vector(4, 6)
+    vector2 = Vector(6, 9)
+    assert vector1.is_parallel_to(vector2)
+    vector2 = Vector(5, 9)
+    assert not vector1.is_parallel_to(vector2)
