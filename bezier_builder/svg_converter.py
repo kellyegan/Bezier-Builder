@@ -89,9 +89,15 @@ def parse_svg_path(d_string: str) -> List[BezierPath]:
             if len(current_path.anchor_points) > 1:
                 start = current_path.start
                 end = current_path.end
-                
+
                 # If start and end points are the same remove extra point and mark is closed
                 if start.pos.x == end.pos.x and start.pos.y == end.pos.y:
+                    if(start.handle_out.mirrors(end.handle_in)):
+                        current_path.start.handle_type = "symmetric"
+                    elif(start.handle_out.is_continuous_with(end.handle_in)):
+                        current_path.start.handle_type = "aligned"
+
+                    current_path.start.handle_in = end.handle_in
                     current_path.anchor_points.pop()
                     current_path.is_closed = True
 

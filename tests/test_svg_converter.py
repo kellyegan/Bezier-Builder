@@ -135,9 +135,28 @@ def test_closed_smoothly():
     bezier_path = path_list[0]
     assert len(bezier_path.anchor_points) == 4
     assert bezier_path.is_closed == True
+
+    # Create a path with a SYMMETRIC transition between start and end
     d="M 190 0 C 150 -20, 80 90, 100 110, C 120 130, 160 200, 200 210 C 240 220, 300 130, 280 100 C 260 70, 230 20, 190 0"
     path_list = parse_svg_path(d)
     bezier_path = path_list[0]
     assert len(bezier_path.anchor_points) == 4
     assert bezier_path.is_closed == True
+
+    for anchor in bezier_path.anchor_points:
+        assert isinstance(anchor, AnchorPoint)
+        assert anchor.handle_type in ("aligned", "symmetric")
+
+    # Create a path with a ALIGNED transition between start and end
+    d="M 190 0 C 150 -20, 80 90, 100 110, C 120 130, 160 200, 200 210 C 240 220, 300 130, 280 100 C 260 70, 270 40, 190 0"
+    path_list = parse_svg_path(d)
+    bezier_path = path_list[0]
+    assert len(bezier_path.anchor_points) == 4
+    assert bezier_path.is_closed == True
+
+    for anchor in bezier_path.anchor_points:
+        assert anchor.handle_type in ("aligned", "symmetric")
+
+    np.testing.assert_allclose(bezier_path.start.handle_in, Vector(80, 40)), "Start handle in should match end handle out"
+
     
