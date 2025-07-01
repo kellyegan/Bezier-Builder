@@ -48,5 +48,8 @@ class Vector(np.ndarray):
     def is_continuous_with(self, other: 'Vector', tolerance=1e-6) -> bool:
         sum = self.normalize() + other.normalize()
         return np.isclose(sum.all(), Vector(0,0).all(), atol=tolerance)
-        
+    
+    def mirrors(self, other: 'Vector', tolerance=1e-6):
+        sum = self + other
+        return np.isclose(sum.all(), Vector(0,0).all(), atol=tolerance)
     

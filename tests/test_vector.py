@@ -53,9 +53,16 @@ def test_parallel():
 
 def test_continuous():
     vector1 = Vector(4, 6)
-    vector2 = Vector(-4, -6)
+    vector2 = Vector(-8, -12)
     assert vector1.is_continuous_with(vector2)
     vector2 = Vector(-3, -6)
     assert not vector1.is_continuous_with(vector2)
     vector2 = Vector(8, 12)
     assert not vector1.is_continuous_with(vector2)
+
+def test_mirrors():
+    vector1 = Vector(4, 6)
+    vector2 = Vector(-4, -6)
+    assert vector1.mirrors(vector2)  
+    vector2 = Vector(-8, -12)
+    assert not vector1.mirrors(vector2)  
