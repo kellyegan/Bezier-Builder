@@ -50,9 +50,16 @@ def parse_svg_path(d_string: str) -> List[BezierPath]:
                 # Modify the previous points handle_out
                 current_path.end_point.handle_out = abs_handle_1 - start
 
+                handle_in = current_path.end_point.handle_in
+                handle_out = -1 * current_path.end_point.handle_out
+                
+                if np.isclose(handle_in.all(), handle_out.all()):
+                    current_path.end_point.handle_type = "symmetric"
+
                 # Create the new anchor point for the end of the curve
                 current_point = AnchorPoint(segment.end.x, segment.end.y)
                 current_point.handle_in = abs_handle_2 - end
+
                 current_path.add_point(current_point)
 
             if isinstance(segment, QuadraticBezier):
@@ -60,7 +67,14 @@ def parse_svg_path(d_string: str) -> List[BezierPath]:
                 control = np.array([segment.control.x, segment.control.y], dtype=np.float32)
                 end = np.array([segment.end.x, segment.end.y], dtype=np.float32)
 
+                # Modify the previous points handle_out
                 current_path.end_point.handle_out = (2/3) * (control - start)
+
+                # handle_in = current_path.end_point.handle_in
+                # handle_out = -1 * current_path.end_point.handle_out
+                
+                # if np.isclose(handle_in.all(), handle_out.all()):
+                #     current_path.end_point.handle_type = "symmetric"
 
                 current_point = AnchorPoint(segment.end.x, segment.end.y)
                 current_point.handle_in = (2/3) * (control - end)

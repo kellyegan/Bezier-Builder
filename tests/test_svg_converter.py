@@ -81,7 +81,6 @@ def test_quadratic_bezier():
     np.testing.assert_array_equal(anchor_2.pos, np.array([100, 70]))
     np.testing.assert_array_equal(anchor_2.handle_in, np.array([-20, 14]))
 
-
 def test_closed_path():
     d="M 0 0 L 10 0 L 10 10 Z"
     path_list = parse_svg_path(d)
@@ -93,7 +92,7 @@ def test_closed_path():
 def test_multiple_subpaths():
     d="M 0 0 L 10 10 M 50 50 L 60 60"
     path_list = parse_svg_path(d)
-    assert len(path_list) == 2, "Expected list of one BezierPath"
+    assert len(path_list) == 2, "Expected list of two BezierPath"
     bezier_path_1 = path_list[0]
     assert isinstance(bezier_path_1, BezierPath)
     anchor_1 = bezier_path_1.anchor_points[0]
@@ -106,3 +105,16 @@ def test_multiple_subpaths():
     anchor_2 = bezier_path_2.anchor_points[1]
     np.testing.assert_array_equal(anchor_1.pos, [50.0, 50.0])
     np.testing.assert_array_equal(anchor_2.pos, [60.0, 60.0])
+
+def test_symmetric_anchor():
+    d="M 10 6 C 12 10, 17 20, 20 18 C 23 16, 24 8, 28 8"
+    path_list = parse_svg_path(d)
+    assert len(path_list) == 1, "Expected list of one BezierPath"
+    bezier_path = path_list[0]
+    assert isinstance(bezier_path, BezierPath)
+    assert len(bezier_path.anchor_points) == 3
+    anchor = bezier_path.anchor_points[1]
+    np.testing.assert_array_equal(anchor.pos, [20.0, 18.0])
+    np.testing.assert_array_equal(anchor.handle_in, [-3, 2.0])
+    np.testing.assert_array_equal(anchor.handle_out, [3, -2.0])
+    assert anchor.handle_type == "symmetric"

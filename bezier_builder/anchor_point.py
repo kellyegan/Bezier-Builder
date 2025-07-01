@@ -15,19 +15,19 @@ class AnchorPoint:
    
     @handle_type.setter
     def handle_type(self, handle_type: str):
-        if handle_type not in ["corner", "aligned", "symmetrical"]:
-            raise ValueError(f"Invalid handle type: '{handle_type}'. Must be one of 'corner', 'aligned' or 'symmetrical'.")
+        if handle_type not in ["corner", "aligned", "symmetric"]:
+            raise ValueError(f"Invalid handle type: '{handle_type}'. Must be one of 'corner', 'aligned' or 'symmetric'.")
         
         self._handle_type = handle_type
 
         if self._handle_type == "corner":
             return
 
-        # For aligned and symmetrical align self._handle_out direction to self._handle_in
+        # For aligned and symmetric align self._handle_out direction to self._handle_in
         direction = -1 * unit_vector(self._handle_in)
 
-        # If handles are symmetrical set the length of self_handle_out to the magnitude of self._handle_in
-        magnitude = np.linalg.norm(self._handle_in) if self.handle_type == "symmetrical" else np.linalg.norm(self._handle_out)
+        # If handles are symmetric set the length of self_handle_out to the magnitude of self._handle_in
+        magnitude = np.linalg.norm(self._handle_in) if self.handle_type == "symmetric" else np.linalg.norm(self._handle_out)
         self._handle_out = direction * magnitude
 
     @property
