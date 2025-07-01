@@ -7,7 +7,6 @@ from bezier_builder.vector import Vector
 def vector():
     return Vector()
 
-
 def test_initialize_defaults(vector):
     assert vector.shape == (2,)
     assert vector.dtype == np.float64
@@ -31,3 +30,9 @@ def test_add_vectors(vector):
     result = vector + other_vector
     np.testing.assert_array_equal(result, np.array([6.0, 8.0]))
     assert isinstance(result, Vector)
+
+def test_magnitude(vector):
+    vector.x = 3
+    vector.y = 4
+    assert vector.magnitude() == 5.0
+

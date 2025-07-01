@@ -25,3 +25,6 @@ class Vector(np.ndarray):
     @y.setter
     def y(self, value: float):
         self[1] = value
+
+    def magnitude(self) -> float:
+        return np.linalg.norm(self)
