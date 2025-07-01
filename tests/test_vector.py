@@ -35,4 +35,13 @@ def test_magnitude(vector):
     vector.x = 3
     vector.y = 4
     assert vector.magnitude() == 5.0
+    assert isinstance(vector.magnitude(), float)
+
+def test_normalize(vector):
+    vector.x = 3
+    vector.y = 4
+    result = vector.normalize()
+    desired_vector = Vector(3 /5, 4 / 5)
+    np.testing.assert_almost_equal(result, desired_vector)
+    
 

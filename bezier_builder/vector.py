@@ -12,7 +12,7 @@ class Vector(np.ndarray):
     
     @property
     def x(self) -> float:
-        return self[0]
+        return self[0].item()
     
     @x.setter
     def x(self, value: float):
@@ -20,7 +20,7 @@ class Vector(np.ndarray):
     
     @property
     def y(self) -> float:
-        return self[1]
+        return self[1].item()
     
     @y.setter
     def y(self, value: float):
@@ -28,3 +28,9 @@ class Vector(np.ndarray):
 
     def magnitude(self) -> float:
         return np.linalg.norm(self)
+    
+    def normalize(self) -> 'Vector':
+        magnitude = self.magnitude()
+        if magnitude == 0:
+            return
+        return self / magnitude
