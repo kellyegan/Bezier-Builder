@@ -43,10 +43,10 @@ def parse_svg_path(d_string: str) -> List[BezierPath]:
                 # Its control1 defines the outgoing handle of that previous point.
 
                 # Get absolute coordinates from the segment
-                start = Vector(segment.start.x, segment.start.y)
-                abs_handle_1 = Vector(segment.control1.x, segment.control1.y)
-                abs_handle_2 = Vector(segment.control2.x, segment.control2.y)
-                end = Vector(segment.end.x, segment.end.y)
+                start = Vector.as_vector(segment.start)
+                abs_handle_1 = Vector.as_vector(segment.control1)
+                abs_handle_2 = Vector.as_vector(segment.control2)
+                end = Vector.as_vector(segment.end)
 
                 # Modify the previous points handle_out
                 current_path.end_point.handle_out = abs_handle_1 - start
@@ -64,10 +64,10 @@ def parse_svg_path(d_string: str) -> List[BezierPath]:
                 current_path.add_point(current_point)
 
             if isinstance(segment, QuadraticBezier):
-                start = Vector(segment.start.x, segment.start.y)
-                control = Vector(segment.control.x, segment.control.y)
-                end = Vector(segment.end.x, segment.end.y)
-                
+                start = Vector.as_vector(segment.start)
+                control = Vector.as_vector(segment.control)
+                end = Vector.as_vector(segment.end)
+
                 # Modify the previous points handle_out
                 current_path.end_point.handle_out = (2/3) * (control - start)
 

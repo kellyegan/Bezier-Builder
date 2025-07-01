@@ -9,6 +9,11 @@ class Vector(np.ndarray):
     def __array_finalize__(self, obj):
         if obj is None:
             return
+        
+    @classmethod
+    def as_vector(cls, obj: object) -> 'Vector':
+        if hasattr(obj, 'x') and hasattr(obj, 'y'):
+            return cls(obj.x, obj.y)
     
     @property
     def x(self) -> float:
