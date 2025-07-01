@@ -3,7 +3,6 @@ import numpy as np
 
 from bezier_builder.anchor_point import AnchorPoint
 from bezier_builder.vector import Vector
-from bezier_builder.utils import unit_vector
 
 @pytest.fixture
 def anchor():
@@ -54,8 +53,8 @@ def test_handle_type_symmetrical(anchor):
 
 def test_handle_type_aligned(anchor):
     """Tests the behavior of the 'aligned' handle type."""
-    anchor._handle_in = np.array([10.0, 0.0])
-    anchor._handle_out = np.array([0.0, -20.0]) # A completely different vector
+    anchor._handle_in = Vector(10.0, 0.0)
+    anchor._handle_out = Vector(0.0, -20.0) # A completely different vector
     
     original_out_magnitude = np.linalg.norm(anchor._handle_out)
     assert original_out_magnitude == 20.0 # Verify initial magnitude
@@ -64,7 +63,7 @@ def test_handle_type_aligned(anchor):
     anchor.handle_type = "aligned"
 
     # handle_out should now be aligned with handle_in but keep its magnitude
-    expected_out_direction = -1 * unit_vector(anchor._handle_in)
+    expected_out_direction = -1 * anchor._handle_in.normalize()
     expected_out = expected_out_direction * original_out_magnitude
 
     np.testing.assert_allclose(anchor._handle_out, expected_out) # Checks direction

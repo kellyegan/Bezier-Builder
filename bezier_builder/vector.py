@@ -36,6 +36,6 @@ class Vector(np.ndarray):
     
     def normalize(self) -> 'Vector':
         magnitude = self.magnitude()
-        if magnitude == 0:
-            return
-        return self / magnitude
+        return self / magnitude if magnitude != 0 else self
+    
+    

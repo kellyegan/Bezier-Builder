@@ -1,5 +1,4 @@
 import numpy as np
-from bezier_builder.utils import unit_vector
 from bezier_builder.vector import Vector
 
 class AnchorPoint:
@@ -25,7 +24,7 @@ class AnchorPoint:
             return
 
         # For aligned and symmetric align self._handle_out direction to self._handle_in
-        direction = -1 * unit_vector(self._handle_in)
+        direction = -1 * self._handle_in.normalize()
 
         # If handles are symmetric set the length of self_handle_out to the magnitude of self._handle_in
         magnitude = np.linalg.norm(self._handle_in) if self.handle_type == "symmetric" else np.linalg.norm(self._handle_out)
