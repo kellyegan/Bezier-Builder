@@ -52,10 +52,12 @@ def parse_svg_path(d_string: str) -> List[BezierPath]:
                 current_path.end_point.handle_out = abs_handle_1 - start
 
                 handle_in = current_path.end_point.handle_in
-                handle_out = -1 * current_path.end_point.handle_out
+                handle_out = current_path.end_point.handle_out
                 
-                if np.isclose(handle_in.all(), handle_out.all()):
+                if handle_in.mirrors(handle_out):
                     current_path.end_point.handle_type = "symmetric"
+                elif handle_in.is_continuous_with(handle_out):
+                    current_path.end_point.handle_type = "aligned"
 
                 # Create the new anchor point for the end of the curve
                 current_point = AnchorPoint(segment.end.x, segment.end.y)

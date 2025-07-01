@@ -119,3 +119,11 @@ def test_symmetric_anchor():
     np.testing.assert_array_equal(anchor.handle_in, [-3, 2.0])
     np.testing.assert_array_equal(anchor.handle_out, [3, -2.0])
     assert anchor.handle_type == "symmetric"
+
+def test_aligned_anchor():
+    d="M 10 6 C 12 10, 14 22, 20 18 C 23 16, 24 8, 28 8"
+    path_list = parse_svg_path(d)
+    bezier_path = path_list[0]
+    assert len(bezier_path.anchor_points) == 3
+    anchor = bezier_path.anchor_points[1]
+    assert anchor.handle_type == "aligned"
