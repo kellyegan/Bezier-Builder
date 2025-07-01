@@ -63,9 +63,24 @@ def test_cubic_bezier_relative():
     anchor_1 = bezier_path.anchor_points[0]
     anchor_2 = bezier_path.anchor_points[1]
     np.testing.assert_array_equal(anchor_1.pos, np.array([100.0,100.0]))
-    np.testing.assert_array_equal(anchor_2.pos, np.array([200.0,100.0]))
     np.testing.assert_array_equal(anchor_1.handle_out, np.array([20, -20]))
+    np.testing.assert_array_equal(anchor_2.pos, np.array([200.0,100.0]))
     np.testing.assert_array_equal(anchor_2.handle_in, np.array([-20, -20]))
+
+def test_quadratic_bezier():
+    d="M 40 70 Q 70 91, 100 70"
+    path_list = parse_svg_path(d)
+    assert len(path_list) == 1
+    bezier_path = path_list[0]
+    assert isinstance(bezier_path, BezierPath)
+    assert len(bezier_path.anchor_points) == 2, "Expected two AnchorPoints"
+    anchor_1 = bezier_path.anchor_points[0]
+    anchor_2 = bezier_path.anchor_points[1]  
+    np.testing.assert_array_equal(anchor_1.pos, np.array([40.0,70.0]))
+    np.testing.assert_array_equal(anchor_1.handle_out, np.array([20, 14]))
+    np.testing.assert_array_equal(anchor_2.pos, np.array([100, 70]))
+    np.testing.assert_array_equal(anchor_2.handle_in, np.array([-20, 14]))
+
 
 def test_closed_path():
     d="M 0 0 L 10 0 L 10 10 Z"

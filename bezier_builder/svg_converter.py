@@ -2,7 +2,7 @@
 
 from typing import List
 import numpy as np
-from svgelements import Path, Move, Line, CubicBezier, Close
+from svgelements import Path, Move, Line, CubicBezier, QuadraticBezier, Close
 
 
 from bezier_builder.bezier_path import BezierPath # Your new class
@@ -53,6 +53,17 @@ def parse_svg_path(d_string: str) -> List[BezierPath]:
                 # Create the new anchor point for the end of the curve
                 current_point = AnchorPoint(segment.end.x, segment.end.y)
                 current_point.handle_in = abs_handle_2 - end
+                current_path.add_point(current_point)
+
+            if isinstance(segment, QuadraticBezier):
+                start = np.array([segment.start.x, segment.start.y], dtype=np.float32)
+                control = np.array([segment.control.x, segment.control.y], dtype=np.float32)
+                end = np.array([segment.end.x, segment.end.y], dtype=np.float32)
+
+                current_path.end_point.handle_out = (2/3) * (control - start)
+
+                current_point = AnchorPoint(segment.end.x, segment.end.y)
+                current_point.handle_in = (2/3) * (control - end)
                 current_path.add_point(current_point)
             
             if isinstance(segment, (Line, Close)):
