@@ -37,8 +37,7 @@ def parse_svg_path(d_string: str) -> List[BezierPath]:
             if isinstance(segment, Move):
                 current_point = AnchorPoint(segment.end.x, segment.end.y)
                 current_path.add_point(current_point)
-
-            if isinstance(segment, CubicBezier):
+            elif isinstance(segment, CubicBezier):
                 # The segment's start point corresponds to our *previous* AnchorPoint.
                 # Its control1 defines the outgoing handle of that previous point.
 
@@ -49,29 +48,28 @@ def parse_svg_path(d_string: str) -> List[BezierPath]:
                 end = Vector.as_vector(segment.end)
 
                 # Modify the previous points handle_out
-                current_path.end_point.handle_out = abs_handle_1 - start
+                current_path.end.handle_out = abs_handle_1 - start
 
-                handle_in = current_path.end_point.handle_in
-                handle_out = current_path.end_point.handle_out
+                handle_in = current_path.end.handle_in
+                handle_out = current_path.end.handle_out
                 
                 if handle_in.mirrors(handle_out):
-                    current_path.end_point.handle_type = "symmetric"
+                    current_path.end.handle_type = "symmetric"
                 elif handle_in.is_continuous_with(handle_out):
-                    current_path.end_point.handle_type = "aligned"
+                    current_path.end.handle_type = "aligned"
 
                 # Create the new anchor point for the end of the curve
                 current_point = AnchorPoint(segment.end.x, segment.end.y)
                 current_point.handle_in = abs_handle_2 - end
 
                 current_path.add_point(current_point)
-
-            if isinstance(segment, QuadraticBezier):
+            elif isinstance(segment, QuadraticBezier):
                 start = Vector.as_vector(segment.start)
                 control = Vector.as_vector(segment.control)
                 end = Vector.as_vector(segment.end)
 
                 # Modify the previous points handle_out
-                current_path.end_point.handle_out = (2/3) * (control - start)
+                current_path.end.handle_out = (2/3) * (control - start)
 
                 # handle_in = current_path.end_point.handle_in
                 # handle_out = -1 * current_path.end_point.handle_out
@@ -82,15 +80,21 @@ def parse_svg_path(d_string: str) -> List[BezierPath]:
                 current_point = AnchorPoint(segment.end.x, segment.end.y)
                 current_point.handle_in = (2/3) * (control - end)
                 current_path.add_point(current_point)
-            
-            if isinstance(segment, (Line, Close)):
+            elif isinstance(segment, (Line, Close)):
                 current_point = AnchorPoint(segment.end.x, segment.end.y)
                 current_path.add_point(current_point)
-
             if isinstance(segment, Close):
                 current_path.is_closed = True
 
-        is_closed = isinstance(subpath[-1], Close)
+            if len(current_path.anchor_points) > 1:
+                start = current_path.start
+                end = current_path.end
+                
+                # If start and end points are the same remove extra point and mark is closed
+                if start.pos.x == end.pos.x and start.pos.y == end.pos.y:
+                    current_path.anchor_points.pop()
+                    current_path.is_closed = True
+
         path_list.append(current_path)
     return path_list
                 

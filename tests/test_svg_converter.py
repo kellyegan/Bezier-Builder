@@ -2,6 +2,7 @@ import pytest
 import numpy as np
 from bezier_builder.svg_converter import parse_svg_path
 from bezier_builder.bezier_path import BezierPath
+from bezier_builder.anchor_point import AnchorPoint
 from bezier_builder.vector import Vector
 
 def test_move_to_line_to():
@@ -127,3 +128,16 @@ def test_aligned_anchor():
     assert len(bezier_path.anchor_points) == 3
     anchor = bezier_path.anchor_points[1]
     assert anchor.handle_type == "aligned"
+
+def test_closed_smoothly():
+    d="M 190, 0 L 100, 110 L 200, 210 L 280, 100 L 190, 0"
+    path_list = parse_svg_path(d)
+    bezier_path = path_list[0]
+    assert len(bezier_path.anchor_points) == 4
+    assert bezier_path.is_closed == True
+    d="M 190 0 C 150 -20, 80 90, 100 110, C 120 130, 160 200, 200 210 C 240 220, 300 130, 280 100 C 260 70, 230 20, 190 0"
+    path_list = parse_svg_path(d)
+    bezier_path = path_list[0]
+    assert len(bezier_path.anchor_points) == 4
+    assert bezier_path.is_closed == True
+    

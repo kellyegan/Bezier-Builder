@@ -23,13 +23,13 @@ class BezierPath:
         self._is_closed = is_closed
 
     @property
-    def start_point(self) -> AnchorPoint:
+    def start(self) -> AnchorPoint:
         if len(self._anchor_points) > 0:
             return self._anchor_points[0]
         return None
         
     @property
-    def end_point(self) -> AnchorPoint:
+    def end(self) -> AnchorPoint:
         if len(self._anchor_points) > 0:
            return self._anchor_points[-1]
         return None
