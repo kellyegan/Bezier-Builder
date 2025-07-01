@@ -1,13 +1,14 @@
 import numpy as np
 from bezier_builder.utils import unit_vector
+from bezier_builder.vector import Vector
 
 class AnchorPoint:
    
     def __init__(self, x=0.0, y=0.0):
       self._handle_type = "corner"
-      self._pos = np.array([x, y], dtype=np.float32)
-      self._handle_in = np.array([0, 0], dtype=np.float32)
-      self._handle_out = np.array([0, 0], dtype=np.float32)
+      self._pos = Vector(x, y) 
+      self._handle_in = Vector() 
+      self._handle_out = Vector()
 
     @property
     def handle_type(self) -> str:
@@ -31,47 +32,41 @@ class AnchorPoint:
         self._handle_out = direction * magnitude
 
     @property
-    def pos(self) -> np.ndarray:
+    def pos(self) -> Vector:
         return self._pos
     
     @pos.setter
-    def pos(self, pos: np.ndarray):
-        pos = np.array(pos)
-        
-        if not isinstance(pos, np.ndarray):
+    def pos(self, pos: Vector):
+        if not isinstance(pos, Vector):
             raise TypeError(f"Invalid type for position. Expected numpy array, got {type(pos)}.")
 
-        self._pos = pos.astype(np.float32)
+        self._pos = pos
 
     @property
-    def handle_in(self) -> np.ndarray:
+    def handle_in(self) -> Vector:
         return self._handle_in
     
     @handle_in.setter
-    def handle_in(self, handle_in: np.ndarray):
-        handle_in = np.array(handle_in)
-        
-        if not isinstance(handle_in, np.ndarray):
+    def handle_in(self, handle_in: Vector):
+        if not isinstance(handle_in, Vector):
             raise TypeError(f"Invalid type for position. Expected numpy array, got {type(handle_in)}.")
 
-        self._handle_in = handle_in.astype(np.float32)
+        self._handle_in = handle_in
 
     @property
-    def handle_out(self) -> np.ndarray:
+    def handle_out(self) -> Vector:
         return self._handle_out
     
     @handle_out.setter
-    def handle_out(self, handle_out: np.ndarray):
-        handle_out = np.array(handle_out)
-        
-        if not isinstance(handle_out, np.ndarray):
+    def handle_out(self, handle_out: Vector):
+        if not isinstance(handle_out, Vector):
             raise TypeError(f"Invalid type for position. Expected numpy array, got {type(handle_out)}.")
 
-        self._handle_out = handle_out.astype(np.float32)
+        self._handle_out = handle_out
 
     def reset_handles(self):
-        self._handle_in = np.array([0, 0])
-        self._handle_out = np.array([0, 0])
+        self._handle_in = Vector()
+        self._handle_out = Vector()
 
     def __repr__(self):
         return (f"AnchorPoint(pos=({str(self._pos[0])}, {str(self._pos[1])}, "

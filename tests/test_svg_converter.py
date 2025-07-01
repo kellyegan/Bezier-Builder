@@ -2,6 +2,7 @@ import pytest
 import numpy as np
 from bezier_builder.svg_converter import parse_svg_path
 from bezier_builder.bezier_path import BezierPath
+from bezier_builder.vector import Vector
 
 def test_move_to_line_to():
     d = "M 10 20 L 30 40"
@@ -13,12 +14,12 @@ def test_move_to_line_to():
     assert bezier_path.is_closed == False
     anchor_1 = bezier_path.anchor_points[0]
     anchor_2 = bezier_path.anchor_points[1]
-    np.testing.assert_array_equal(anchor_1.pos, np.array([10.0,20.0]))
-    np.testing.assert_array_equal(anchor_2.pos, np.array([30.0,40.0]))
-    np.testing.assert_array_equal(anchor_1.handle_in, np.array([0.0,0.0]))
-    np.testing.assert_array_equal(anchor_1.handle_out, np.array([0.0,0.0]))
-    np.testing.assert_array_equal(anchor_2.handle_in, np.array([0.0,0.0]))
-    np.testing.assert_array_equal(anchor_2.handle_out, np.array([0.0,0.0]))
+    np.testing.assert_array_equal(anchor_1.pos, Vector(10.0,20.0))
+    np.testing.assert_array_equal(anchor_2.pos, Vector(30.0,40.0))
+    np.testing.assert_array_equal(anchor_1.handle_in, Vector(0.0,0.0))
+    np.testing.assert_array_equal(anchor_1.handle_out, Vector(0.0,0.0))
+    np.testing.assert_array_equal(anchor_2.handle_in, Vector(0.0,0.0))
+    np.testing.assert_array_equal(anchor_2.handle_out, Vector(0.0,0.0))
 
 def test_move_to_line_to_relative():
     d="M 10 20 l 20 20"
@@ -30,12 +31,12 @@ def test_move_to_line_to_relative():
     assert bezier_path.is_closed == False
     anchor_1 = bezier_path.anchor_points[0]
     anchor_2 = bezier_path.anchor_points[1]
-    np.testing.assert_array_equal(anchor_1.pos, np.array([10.0,20.0]))
-    np.testing.assert_array_equal(anchor_2.pos, np.array([30.0,40.0]))
-    np.testing.assert_array_equal(anchor_1.handle_in, np.array([0.0,0.0]))
-    np.testing.assert_array_equal(anchor_1.handle_out, np.array([0.0,0.0]))
-    np.testing.assert_array_equal(anchor_2.handle_in, np.array([0.0,0.0]))
-    np.testing.assert_array_equal(anchor_2.handle_out, np.array([0.0,0.0]))
+    np.testing.assert_array_equal(anchor_1.pos, Vector(10.0,20.0))
+    np.testing.assert_array_equal(anchor_2.pos, Vector(30.0,40.0))
+    np.testing.assert_array_equal(anchor_1.handle_in, Vector(0.0,0.0))
+    np.testing.assert_array_equal(anchor_1.handle_out, Vector(0.0,0.0))
+    np.testing.assert_array_equal(anchor_2.handle_in, Vector(0.0,0.0))
+    np.testing.assert_array_equal(anchor_2.handle_out, Vector(0.0,0.0))
 
 def test_cubic_bezier():
     d="M 100 100 C 120 80, 180 80, 200 100"
@@ -47,10 +48,10 @@ def test_cubic_bezier():
     assert bezier_path.is_closed == False
     anchor_1 = bezier_path.anchor_points[0]
     anchor_2 = bezier_path.anchor_points[1]
-    np.testing.assert_array_equal(anchor_1.pos, np.array([100.0,100.0]))
-    np.testing.assert_array_equal(anchor_2.pos, np.array([200.0,100.0]))
-    np.testing.assert_array_equal(anchor_1.handle_out, np.array([20, -20]))
-    np.testing.assert_array_equal(anchor_2.handle_in, np.array([-20, -20]))
+    np.testing.assert_array_equal(anchor_1.pos, Vector(100,100))
+    np.testing.assert_array_equal(anchor_2.pos, Vector(200,100))
+    np.testing.assert_array_equal(anchor_1.handle_out, Vector(20,-20))
+    np.testing.assert_array_equal(anchor_2.handle_in, Vector(-20,-20))
 
 def test_cubic_bezier_relative():
     d="M 100 100 c 20 -20, 80 -20, 100 0"
@@ -62,9 +63,9 @@ def test_cubic_bezier_relative():
     assert bezier_path.is_closed == False
     anchor_1 = bezier_path.anchor_points[0]
     anchor_2 = bezier_path.anchor_points[1]
-    np.testing.assert_array_equal(anchor_1.pos, np.array([100.0,100.0]))
+    np.testing.assert_array_equal(anchor_1.pos, Vector(100.0,100.0))
     np.testing.assert_array_equal(anchor_1.handle_out, np.array([20, -20]))
-    np.testing.assert_array_equal(anchor_2.pos, np.array([200.0,100.0]))
+    np.testing.assert_array_equal(anchor_2.pos, Vector(200.0,100.0))
     np.testing.assert_array_equal(anchor_2.handle_in, np.array([-20, -20]))
 
 def test_quadratic_bezier():
@@ -76,7 +77,7 @@ def test_quadratic_bezier():
     assert len(bezier_path.anchor_points) == 2, "Expected two AnchorPoints"
     anchor_1 = bezier_path.anchor_points[0]
     anchor_2 = bezier_path.anchor_points[1]  
-    np.testing.assert_array_equal(anchor_1.pos, np.array([40.0,70.0]))
+    np.testing.assert_array_equal(anchor_1.pos, Vector(40.0,70.0))
     np.testing.assert_array_equal(anchor_1.handle_out, np.array([20, 14]))
     np.testing.assert_array_equal(anchor_2.pos, np.array([100, 70]))
     np.testing.assert_array_equal(anchor_2.handle_in, np.array([-20, 14]))

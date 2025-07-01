@@ -5,8 +5,9 @@ import numpy as np
 from svgelements import Path, Move, Line, CubicBezier, QuadraticBezier, Close
 
 
-from bezier_builder.bezier_path import BezierPath # Your new class
-from bezier_builder.anchor_point import AnchorPoint # Your existing class
+from bezier_builder.bezier_path import BezierPath
+from bezier_builder.anchor_point import AnchorPoint
+from bezier_builder.vector import Vector
 
 
 def parse_svg_path(d_string: str) -> List[BezierPath]:
@@ -42,10 +43,10 @@ def parse_svg_path(d_string: str) -> List[BezierPath]:
                 # Its control1 defines the outgoing handle of that previous point.
 
                 # Get absolute coordinates from the segment
-                start = np.array([segment.start.x, segment.start.y], dtype=np.float32)
-                abs_handle_1 = np.array([segment.control1.x, segment.control1.y], dtype=np.float32)
-                abs_handle_2 = np.array([segment.control2.x, segment.control2.y], dtype=np.float32)
-                end = np.array([segment.end.x, segment.end.y], dtype=np.float32)
+                start = Vector(segment.start.x, segment.start.y)
+                abs_handle_1 = Vector(segment.control1.x, segment.control1.y)
+                abs_handle_2 = Vector(segment.control2.x, segment.control2.y)
+                end = Vector(segment.end.x, segment.end.y)
 
                 # Modify the previous points handle_out
                 current_path.end_point.handle_out = abs_handle_1 - start
@@ -63,10 +64,10 @@ def parse_svg_path(d_string: str) -> List[BezierPath]:
                 current_path.add_point(current_point)
 
             if isinstance(segment, QuadraticBezier):
-                start = np.array([segment.start.x, segment.start.y], dtype=np.float32)
-                control = np.array([segment.control.x, segment.control.y], dtype=np.float32)
-                end = np.array([segment.end.x, segment.end.y], dtype=np.float32)
-
+                start = Vector(segment.start.x, segment.start.y)
+                control = Vector(segment.control.x, segment.control.y)
+                end = Vector(segment.end.x, segment.end.y)
+                
                 # Modify the previous points handle_out
                 current_path.end_point.handle_out = (2/3) * (control - start)
 

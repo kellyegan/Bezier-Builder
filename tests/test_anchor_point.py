@@ -2,6 +2,7 @@ import pytest
 import numpy as np
 
 from bezier_builder.anchor_point import AnchorPoint
+from bezier_builder.vector import Vector
 from bezier_builder.utils import unit_vector
 
 @pytest.fixture
@@ -31,43 +32,21 @@ def test_initialize_with_args():
 
 def test_data_types_on_init(anchor):
     """Tests that vector attributes are numpy arrays with dtype=float32."""
-    assert isinstance(anchor.pos, np.ndarray)
-    assert isinstance(anchor._handle_in, np.ndarray)
-    assert isinstance(anchor._handle_out, np.ndarray)
-
-    assert anchor.pos.dtype == np.float32
-    assert anchor._handle_in.dtype == np.float32
-    assert anchor._handle_out.dtype == np.float32
-
-def test_pos_setter_type_conversion(anchor):
-    """Tests that the pos setter correctly converts lists/tuples to float32 ndarray."""
-    anchor.pos = [100, 200]  # Set with a list of ints
-    assert anchor.pos.dtype == np.float32
-    np.testing.assert_array_equal(anchor.pos, np.array([100.0, 200.0]))
-
-def test_handle_in_setter_type_conversion(anchor):
-    """Tests that the pos setter correctly converts lists/tuples to float32 ndarray."""
-    anchor.handle_in = [100, 200]  # Set with a list of ints
-    assert anchor.handle_in.dtype == np.float32
-    np.testing.assert_array_equal(anchor.handle_in, np.array([100.0, 200.0]))
-
-def test_handle_out_setter_type_conversion(anchor):
-    """Tests that the pos setter correctly converts lists/tuples to float32 ndarray."""
-    anchor.handle_out = [100, 200]  # Set with a list of ints
-    assert anchor.handle_out.dtype == np.float32
-    np.testing.assert_array_equal(anchor.handle_out, np.array([100.0, 200.0]))
+    assert isinstance(anchor.pos, Vector)
+    assert isinstance(anchor._handle_in, Vector)
+    assert isinstance(anchor._handle_out, Vector)
 
 # Test handle type logic
 
 def test_handle_type_symmetrical(anchor):
     """Tests the behavior of the 'symmetrical' handle type."""
-    anchor._handle_in = np.array([15.0, -25.0])
+    anchor._handle_in = Vector(15.0, -25.0)
     
     # Set the type to symmetrical, which should trigger the alignment logic
-    anchor.handle_type = "symmetrical"
+    anchor.handle_type = "symmetric"
     
     # handle_out should be the exact opposite of handle_in
-    expected_out = np.array([-15.0, 25.0])
+    expected_out = Vector(-15.0, 25.0)
     np.testing.assert_allclose(anchor._handle_out, expected_out)
     
     # Magnitudes should be equal
@@ -120,16 +99,16 @@ def test_handle_type_change_with_zero_vector(anchor):
     anchor._handle_in = np.array([0.0, 0.0])
     anchor._handle_out = np.array([10.0, 10.0]) # Give handle_out a value
     
-    anchor.handle_type = "symmetrical"
+    anchor.handle_type = "symmetric"
     
     # If handle_in is zero, handle_out should also become zero
     np.testing.assert_allclose(anchor._handle_out, np.array([0.0, 0.0]))
 
 def test_state_transition_to_corner(anchor):
     """Tests that handles become independent after switching back to 'corner'."""
-    # 1. First, make them symmetrical and linked
+    # 1. First, make them symmetric and linked
     anchor._handle_in = np.array([10, 10])
-    anchor.handle_type = "symmetrical"
+    anchor.handle_type = "symmetric"
     np.testing.assert_allclose(anchor._handle_out, np.array([-10, -10]))
     
     # 2. Switch back to corner

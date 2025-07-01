@@ -1,4 +1,5 @@
 from bezier_builder.anchor_point import AnchorPoint
+from bezier_builder.vector import Vector
 
 class BezierPath:
     def __init__(self):
@@ -42,7 +43,7 @@ class BezierPath:
     def add_point(self, anchor):
         self._anchor_points.append(anchor)
 
-    def create_point(self, pos=(0.0,0.0), handle_in=(0.0,0.0), handle_out=(0.0,0.0), type="corner"):
+    def create_point(self, pos=Vector(0.0,0.0), handle_in=Vector(0.0,0.0), handle_out=Vector(0.0,0.0), type="corner"):
         point = AnchorPoint()
         point.pos = pos
         point.handle_in = handle_in
