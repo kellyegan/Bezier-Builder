@@ -43,9 +43,10 @@ class Vector(np.ndarray):
             raise ValueError("Vectors must have the same dimension")
         
         cross_product = self.x * other.y - self.y * other.x
-        return np.isclose(cross_product, 0.0, atol=tolerance).item()
+        return np.isclose(cross_product, 0.0, atol=tolerance).item()       
         
-        
-        
+    def is_continuous_with(self, other: 'Vector', tolerance=1e-6) -> bool:
+        sum = self.normalize() + other.normalize()
+        return np.isclose(sum.all(), Vector(0,0).all(), atol=tolerance)
         
     

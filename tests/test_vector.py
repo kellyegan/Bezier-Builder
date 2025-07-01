@@ -50,3 +50,12 @@ def test_parallel():
     assert vector1.is_parallel_to(vector2)
     vector2 = Vector(5, 9)
     assert not vector1.is_parallel_to(vector2)
+
+def test_continuous():
+    vector1 = Vector(4, 6)
+    vector2 = Vector(-4, -6)
+    assert vector1.is_continuous_with(vector2)
+    vector2 = Vector(-3, -6)
+    assert not vector1.is_continuous_with(vector2)
+    vector2 = Vector(8, 12)
+    assert not vector1.is_continuous_with(vector2)
