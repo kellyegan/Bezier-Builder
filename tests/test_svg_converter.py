@@ -166,3 +166,10 @@ def test_build_line_string():
     path.create_point(pos=Vector(30, 40))
     svg_string = build_svg_path([path])
     assert svg_string == "M 10 20 L 30 40"
+
+def test_build_curve_string():
+    path = BezierPath()
+    path.create_point(pos=Vector(100, 100), handle_out=Vector(20, -20))
+    path.create_point(pos=Vector(200, 100), handle_in=Vector(-20, -20))
+    svg_string = build_svg_path([path])
+    assert svg_string == "M 100 100 C 120 80 180 80 200 100"

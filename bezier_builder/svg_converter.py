@@ -119,20 +119,25 @@ def build_svg_path(paths: List[BezierPath]) -> str:
         A string suitable for use in an SVG <path> 'd' attribute.
     """
 
-    
     svg_string = ""
     
     for path in paths:
         svg_string += f"M {nf(path.start.pos.x)} {nf(path.start.pos.y)} "
-        previous = path.start
+        prev = path.start
 
         for i in range(1, len(path.anchor_points)):
-            current = path.anchor_points[i]
+            curr = path.anchor_points[i]
 
-            if previous.handle_out.magnitude() == 0 and current.handle_in.magnitude() == 0:
-                svg_string += f"L {nf(current.pos.x)} {nf(current.pos.y)} "
+            if prev.handle_out.magnitude() == 0 and curr.handle_in.magnitude() == 0:
+                svg_string += f"L {nf(curr.pos.x)} {nf(curr.pos.y)} "
+            else:
+                c1 = prev.pos + prev.handle_out
+                c2 = curr.pos + curr.handle_in
+                svg_string += f"C {nf(c1.x)} {nf(c1.y)} "
+                svg_string += f"{nf(c2.x)} {nf(c2.y)} "
+                svg_string += f"{nf(curr.pos.x)} {nf(curr.pos.y)} "
                 
-            previous = current
+            prev = curr
             
     return svg_string.rstrip()
 
