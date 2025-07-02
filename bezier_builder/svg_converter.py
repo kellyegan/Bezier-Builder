@@ -37,7 +37,7 @@ def parse_svg_path(d_string: str) -> List[BezierPath]:
             # The first point of any subpath is always a Move
             if isinstance(segment, Move):
                 current_point = AnchorPoint(segment.end.x, segment.end.y)
-                current_path.add_point(current_point)
+                current_path.append(current_point)
             elif isinstance(segment, CubicBezier):
                 # The segment's start point corresponds to our *previous* AnchorPoint.
                 # Its control1 defines the outgoing handle of that previous point.
@@ -63,7 +63,7 @@ def parse_svg_path(d_string: str) -> List[BezierPath]:
                 current_point = AnchorPoint(segment.end.x, segment.end.y)
                 current_point.handle_in = abs_handle_2 - end
 
-                current_path.add_point(current_point)
+                current_path.append(current_point)
             elif isinstance(segment, QuadraticBezier):
                 start = Vector.as_vector(segment.start)
                 control = Vector.as_vector(segment.control)
@@ -80,10 +80,10 @@ def parse_svg_path(d_string: str) -> List[BezierPath]:
 
                 current_point = AnchorPoint(segment.end.x, segment.end.y)
                 current_point.handle_in = (2/3) * (control - end)
-                current_path.add_point(current_point)
+                current_path.append(current_point)
             elif isinstance(segment, (Line, Close)):
                 current_point = AnchorPoint(segment.end.x, segment.end.y)
-                current_path.add_point(current_point)
+                current_path.append(current_point)
             if isinstance(segment, Close):
                 current_path.is_closed = True
 

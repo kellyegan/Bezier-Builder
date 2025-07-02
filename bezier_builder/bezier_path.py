@@ -43,10 +43,12 @@ class BezierPath:
             return self._anchor_points[-2]
         return None
     
-    def add_point(self, anchor):
+    def append(self, anchor: AnchorPoint):
+        if not isinstance(anchor, AnchorPoint):
+            raise TypeError("Anchor must be an instance of AnchorPoint")
         self._anchor_points.append(anchor)
 
-    def create_point(self, pos=Vector(0.0,0.0), handle_in=Vector(0.0,0.0), handle_out=Vector(0.0,0.0), type="corner"):
+    def create(self, pos=Vector(0.0,0.0), handle_in=Vector(0.0,0.0), handle_out=Vector(0.0,0.0), type="corner"):
         point = AnchorPoint()
         point.pos = pos
         point.handle_in = handle_in
