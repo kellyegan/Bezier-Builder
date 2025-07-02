@@ -192,3 +192,20 @@ def test_closed_path():
     path.is_closed = True
     svg_string = build_svg_path([path])
     assert svg_string == "M 60 20 C 40 20 0 50 10 70 C 20 90 100 90 110 70 C 120 50 80 20 60 20"
+
+def test_multiple_paths():
+    # Closed linear path
+    path1 = BezierPath()
+    path1.create_point(pos=Vector(60, 20))
+    path1.create_point(pos=Vector(10, 70))
+    path1.create_point(pos=Vector(110, 70))
+    path1.is_closed = True
+
+    # Closed curved path
+    path2 = BezierPath()
+    path2.create_point(pos=Vector(60, 20), handle_in=Vector(20,0), handle_out=Vector(-20,0))
+    path2.create_point(pos=Vector(10, 70), handle_in=Vector(-10,-20), handle_out=Vector(10,20))
+    path2.create_point(pos=Vector(110, 70), handle_in=Vector(-10,20), handle_out=Vector(10,-20))
+    path2.is_closed = True
+    svg_string = build_svg_path([path1, path2])
+    assert svg_string == "M 60 20 L 10 70 L 110 70 L 60 20 M 60 20 C 40 20 0 50 10 70 C 20 90 100 90 110 70 C 120 50 80 20 60 20"    
