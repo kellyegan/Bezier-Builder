@@ -156,6 +156,7 @@ def test_closed_smoothly():
     for anchor in bezier_path:
         assert anchor.handle_type == "aligned"
 
+    # Check SYMMETRIC closed paths on quadratic beziers
     d="M -50 0 Q -50 50 0 50 Q 50, 50 50 0 Q 50 -50 0 -50 Q -50 -50 -50 0"
     path_list = parse_svg_path(d)
     bezier_path = path_list[0]
@@ -164,6 +165,16 @@ def test_closed_smoothly():
 
     for anchor in bezier_path:
         assert anchor.handle_type == "symmetric"
+
+    # Check ALIGNED closed paths on quadratic beziers
+    d="M -50 0 Q -60 30 0 50 Q 30, 60 50 0 Q 60 -30 0 -50 Q -30 -60 -50 0"
+    path_list = parse_svg_path(d)
+    bezier_path = path_list[0]
+    assert len(bezier_path.anchor_points) == 4
+    assert bezier_path.is_closed == True
+
+    for anchor in bezier_path:
+        assert anchor.handle_type == "aligned"
     
 
 def test_build_line_string():
