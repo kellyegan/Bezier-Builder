@@ -1,6 +1,6 @@
 import pytest
 import numpy as np
-from bezier_builder.svg_converter import parse_svg_path
+from bezier_builder.svg_converter import parse_svg_path, build_svg_path
 from bezier_builder.bezier_path import BezierPath
 from bezier_builder.anchor_point import AnchorPoint
 from bezier_builder.vector import Vector
@@ -157,6 +157,12 @@ def test_closed_smoothly():
     for anchor in bezier_path.anchor_points:
         assert anchor.handle_type in ("aligned", "symmetric")
 
-    np.testing.assert_allclose(bezier_path.start.handle_in, Vector(80, 40)), "Start handle in should match end handle out"
+    np.testing.assert_allclose(bezier_path.start.handle_in, Vector(80, 40))
 
-    
+
+def test_build_line_string():
+    path = BezierPath()
+    path.create_point(pos=Vector(10, 20))
+    path.create_point(pos=Vector(30, 40))
+    svg_string = build_svg_path([path])
+    assert svg_string == "M 10 20 L 30 40"

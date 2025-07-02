@@ -3,6 +3,7 @@
 from typing import List
 import numpy as np
 from svgelements import Path, Move, Line, CubicBezier, QuadraticBezier, Close
+import re
 
 
 from bezier_builder.bezier_path import BezierPath
@@ -117,19 +118,26 @@ def build_svg_path(paths: List[BezierPath]) -> str:
     Returns:
         A string suitable for use in an SVG <path> 'd' attribute.
     """
-    # The core logic will live here. It will need to:
-    # 1. Iterate through each BezierPath in the list.
-    # 2. For each path, start with a 'M' command for the first anchor point.
-    # 3. Iterate through the remaining anchor points.
-    # 4. **Crucially:** Decide whether to use a 'L' (Line) or 'C' (Curve) command.
-    #    - If the previous point's handle_out and the current point's handle_in are both zero, use 'L'.
-    #    - Otherwise, use 'C'.
-    # 5. When building a 'C' command, convert the AnchorPoint's relative handles back to absolute SVG coordinates.
-    #    - SVG `C` needs `(handle_out_absolute, handle_in_absolute, new_pos_absolute)`.
-    #    - `handle_out_absolute = previous_point.pos + previous_point.handle_out`.
-    #    - `handle_in_absolute = current_point.pos + current_point.handle_in`.
-    # 6. If a path's 'is_closed' flag is True, append 'Z' to its command string.
-    # 7. Join all command strings together.
 
-    # Placeholder implementation
-    pass
+    
+    svg_string = ""
+    
+    for path in paths:
+        svg_string += f"M {nf(path.start.pos.x)} {nf(path.start.pos.y)} "
+        previous = path.start
+
+        for i in range(1, len(path.anchor_points)):
+            current = path.anchor_points[i]
+
+            if previous.handle_out.magnitude() == 0 and current.handle_in.magnitude() == 0:
+                svg_string += f"L {nf(current.pos.x)} {nf(current.pos.y)} "
+                
+            previous = current
+            
+    return svg_string.rstrip()
+
+def nf(value):
+    s = f"{value:.5f}"
+    s = re.sub("\.?0+$", "", s)
+    return s
+
