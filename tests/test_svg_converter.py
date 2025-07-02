@@ -156,6 +156,16 @@ def test_closed_smoothly():
     for anchor in bezier_path:
         assert anchor.handle_type == "aligned"
 
+    d="M -50 0 Q -50 50 0 50 Q 50, 50 50 0 Q 50 -50 0 -50 Q -50 -50 -50 0"
+    path_list = parse_svg_path(d)
+    bezier_path = path_list[0]
+    assert len(bezier_path.anchor_points) == 4
+    assert bezier_path.is_closed == True
+
+    for anchor in bezier_path:
+        assert anchor.handle_type == "symmetric"
+    
+
 def test_build_line_string():
     path = BezierPath()
     path.create(pos=Vector(10, 20))
