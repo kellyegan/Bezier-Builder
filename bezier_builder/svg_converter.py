@@ -73,8 +73,6 @@ def parse_svg_path(d_string: str) -> List[BezierPath]:
                 # Modify the previous points handle_out
                 current_path.end.handle_out = (2/3) * (control - start)
 
-
-
                 current_point = AnchorPoint(segment.end.x, segment.end.y)
                 current_point.handle_in = (2/3) * (control - end)
                 current_path.append(current_point)
