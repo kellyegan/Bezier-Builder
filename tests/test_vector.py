@@ -53,10 +53,17 @@ def test_parallel():
 
 def test_continuous():
     vector1 = Vector(4, 6)
-    vector2 = Vector(-8, -12)
-    assert vector1.is_continuous_with(vector2)
-    vector2 = Vector(-3, -6)
+
+    # Test multiple scalars of opposite vector
+    for i in range(1, 100):
+        vector2 = vector1 * -i
+        assert vector1.is_continuous_with(vector2)
+    
+    # Test a vector not parallel with the other
+    vector2 = Vector(-3, -7)
     assert not vector1.is_continuous_with(vector2)
+
+    # Test a scalars that are parallel scalar of first
     vector2 = Vector(8, 12)
     assert not vector1.is_continuous_with(vector2)
 
