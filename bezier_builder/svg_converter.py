@@ -123,21 +123,15 @@ def build_svg_path(paths: List[BezierPath]) -> str:
     
     for path in paths:
         svg_string += f"M {nf(path.start.pos.x)} {nf(path.start.pos.y)} "
-        prev = path.start
+        previous = path.start
 
         for i in range(1, len(path.anchor_points)):
-            curr = path.anchor_points[i]
+            current = path.anchor_points[i]
+            svg_string += bezier_string(previous, current)
+            previous = current
 
-            if prev.handle_out.magnitude() == 0 and curr.handle_in.magnitude() == 0:
-                svg_string += f"L {nf(curr.pos.x)} {nf(curr.pos.y)} "
-            else:
-                c1 = prev.pos + prev.handle_out
-                c2 = curr.pos + curr.handle_in
-                svg_string += f"C {nf(c1.x)} {nf(c1.y)} "
-                svg_string += f"{nf(c2.x)} {nf(c2.y)} "
-                svg_string += f"{nf(curr.pos.x)} {nf(curr.pos.y)} "
-                
-            prev = curr
+        if path.is_closed:
+            svg_string += bezier_string(path.end, path.start)
             
     return svg_string.rstrip()
 
@@ -145,4 +139,18 @@ def nf(value):
     s = f"{value:.5f}"
     s = re.sub("\.?0+$", "", s)
     return s
+
+def bezier_string(prev, curr):
+    str = ""
+    
+    if prev.handle_out.magnitude() == 0 and curr.handle_in.magnitude() == 0:
+        str += f"L {nf(curr.pos.x)} {nf(curr.pos.y)} "
+    else:
+        c1 = prev.pos + prev.handle_out
+        c2 = curr.pos + curr.handle_in
+        str += f"C {nf(c1.x)} {nf(c1.y)} "
+        str += f"{nf(c2.x)} {nf(c2.y)} "
+        str += f"{nf(curr.pos.x)} {nf(curr.pos.y)} "
+
+    return str
 

@@ -173,3 +173,22 @@ def test_build_curve_string():
     path.create_point(pos=Vector(200, 100), handle_in=Vector(-20, -20))
     svg_string = build_svg_path([path])
     assert svg_string == "M 100 100 C 120 80 180 80 200 100"
+
+def test_closed_path():
+    # Closed linear path
+    path = BezierPath()
+    path.create_point(pos=Vector(60, 20))
+    path.create_point(pos=Vector(10, 70))
+    path.create_point(pos=Vector(110, 70))
+    path.is_closed = True
+    svg_string = build_svg_path([path])
+    assert svg_string == "M 60 20 L 10 70 L 110 70 L 60 20"
+
+    # Closed curved path
+    path = BezierPath()
+    path.create_point(pos=Vector(60, 20), handle_in=Vector(20,0), handle_out=Vector(-20,0))
+    path.create_point(pos=Vector(10, 70), handle_in=Vector(-10,-20), handle_out=Vector(10,20))
+    path.create_point(pos=Vector(110, 70), handle_in=Vector(-10,20), handle_out=Vector(10,-20))
+    path.is_closed = True
+    svg_string = build_svg_path([path])
+    assert svg_string == "M 60 20 C 40 20 0 50 10 70 C 20 90 100 90 110 70 C 120 50 80 20 60 20"
