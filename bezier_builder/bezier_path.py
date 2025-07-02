@@ -6,6 +6,9 @@ class BezierPath:
         self._anchor_points = []
         self._is_closed = False
 
+    def __iter__(self):
+        return iter(self._anchor_points)
+
     @property
     def anchor_points(self) -> list:
         return self._anchor_points

@@ -154,7 +154,7 @@ def test_closed_smoothly():
     assert len(bezier_path.anchor_points) == 3
     assert bezier_path.is_closed == True
 
-    for anchor in bezier_path.anchor_points:
+    for anchor in bezier_path:
         assert anchor.handle_type in ("aligned", "symmetric")
 
     np.testing.assert_allclose(bezier_path.start.handle_in, Vector(80, 40))
