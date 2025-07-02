@@ -51,6 +51,7 @@ def parse_svg_path(d_string: str) -> List[BezierPath]:
                 # Modify the previous points handle_out
                 current_path.end.handle_out = abs_handle_1 - start
 
+                # Check to see if we need to set a handle type
                 handle_in = current_path.end.handle_in
                 handle_out = current_path.end.handle_out
                 
@@ -72,11 +73,7 @@ def parse_svg_path(d_string: str) -> List[BezierPath]:
                 # Modify the previous points handle_out
                 current_path.end.handle_out = (2/3) * (control - start)
 
-                # handle_in = current_path.end_point.handle_in
-                # handle_out = -1 * current_path.end_point.handle_out
-                
-                # if np.isclose(handle_in.all(), handle_out.all()):
-                #     current_path.end_point.handle_type = "symmetric"
+
 
                 current_point = AnchorPoint(segment.end.x, segment.end.y)
                 current_point.handle_in = (2/3) * (control - end)
@@ -136,6 +133,9 @@ def build_svg_path(paths: List[BezierPath]) -> str:
     return svg_string.rstrip()
 
 def nf(value):
+    """
+    Format numbers to 5 decimal places, but remove trailing zeros.
+    """
     s = f"{value:.5f}"
     s = re.sub("\.?0+$", "", s)
     return s
