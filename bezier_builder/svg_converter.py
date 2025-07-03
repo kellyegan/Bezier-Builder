@@ -148,6 +148,10 @@ def nf(value):
     return s
 
 def bezier_string(prev, curr):
+    """
+    Generate a Bezier curve string for the given two points.
+    If the handles are both zero, then we're just drawing a line.
+    """
     str = ""
     
     if prev.handle_out.magnitude() == 0 and curr.handle_in.magnitude() == 0:
