@@ -63,6 +63,14 @@ class AnchorPoint:
 
         self._handle_out = handle_out
 
+    def detect_handle_type(self):
+        if self.handle_in.mirrors(self.handle_out):
+            self.handle_type = "symmetric"
+        elif self.handle_in.is_continuous_with(self.handle_out):
+            self.handle_type = "aligned"
+        else:
+            self.handle_type = "corner"
+
     def reset_handles(self):
         self._handle_in = Vector()
         self._handle_out = Vector()

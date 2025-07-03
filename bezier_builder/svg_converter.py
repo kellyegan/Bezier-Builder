@@ -39,52 +39,28 @@ def parse_svg_path(d_string: str) -> List[BezierPath]:
                 current_point = AnchorPoint(segment.end.x, segment.end.y)
                 current_path.append(current_point)
             elif isinstance(segment, CubicBezier):
-                # The segment's start point corresponds to our *previous* AnchorPoint.
-                # Its control1 defines the outgoing handle of that previous point.
-
-                # Get absolute coordinates from the segment
+                # Get coordinates from the segment
                 start = Vector.as_vector(segment.start)
-                abs_handle_1 = Vector.as_vector(segment.control1)
-                abs_handle_2 = Vector.as_vector(segment.control2)
                 end = Vector.as_vector(segment.end)
 
-                # Modify the previous points handle_out
-                current_path.end.handle_out = abs_handle_1 - start
-
-                # Check to see if we need to set a handle type
-                handle_in = current_path.end.handle_in
-                handle_out = current_path.end.handle_out
-                
-                if handle_in.mirrors(handle_out):
-                    current_path.end.handle_type = "symmetric"
-                elif handle_in.is_continuous_with(handle_out):
-                    current_path.end.handle_type = "aligned"
-
-                # Create the new anchor point for the end of the curve
-                current_point = AnchorPoint(segment.end.x, segment.end.y)
-                current_point.handle_in = abs_handle_2 - end
-
-                current_path.append(current_point)
+                append_bezier_to_path(
+                    handle_1=Vector.as_vector(segment.control1) - start,
+                    handle_2=Vector.as_vector(segment.control2) - end,
+                    end=end,
+                    path=current_path
+                    )
             elif isinstance(segment, QuadraticBezier):
                 start = Vector.as_vector(segment.start)
                 control = Vector.as_vector(segment.control)
                 end = Vector.as_vector(segment.end)
 
-                # Modify the previous points handle_out
-                current_path.end.handle_out = (2/3) * (control - start)
+                append_bezier_to_path(
+                    handle_1=(2/3) * (control - start), 
+                    handle_2=(2/3) * (control - end), 
+                    end=end, 
+                    path=current_path
+                    )
 
-                # Check to see if we need to set a handle type
-                handle_in = current_path.end.handle_in
-                handle_out = current_path.end.handle_out
-                
-                if handle_in.mirrors(handle_out):
-                    current_path.end.handle_type = "symmetric"
-                elif handle_in.is_continuous_with(handle_out):
-                    current_path.end.handle_type = "aligned"
-
-                current_point = AnchorPoint(segment.end.x, segment.end.y)
-                current_point.handle_in = (2/3) * (control - end)
-                current_path.append(current_point)
             elif isinstance(segment, (Line, Close)):
                 current_point = AnchorPoint(segment.end.x, segment.end.y)
                 current_path.append(current_point)
@@ -108,6 +84,16 @@ def parse_svg_path(d_string: str) -> List[BezierPath]:
 
         path_list.append(current_path)
     return path_list
+
+def append_bezier_to_path(handle_1, handle_2, end, path):
+    # Set previous anchors handle_out 
+    path.end.handle_out = handle_1
+    # Check if handles are aligned or symmetric
+    path.end.detect_handle_type()
+
+    current_point = AnchorPoint(end.x, end.y)
+    current_point.handle_in = handle_2 
+    path.append(current_point)
                 
             
                 
@@ -120,7 +106,7 @@ def build_svg_path(paths: List[BezierPath]) -> str:
         paths: A list of BezierPath objects.
 
     Returns:
-        A string suitable for use in an SVG <path> 'd' attribute.
+        str: A string suitable for use in an SVG <path> 'd' attribute.
     """
 
     svg_string = ""
