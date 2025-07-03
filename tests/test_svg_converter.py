@@ -83,6 +83,48 @@ def test_quadratic_bezier():
     np.testing.assert_array_equal(anchor_2.pos, np.array([100, 70]))
     np.testing.assert_array_equal(anchor_2.handle_in, np.array([-20, 14]))
 
+def test_arc_bezier():
+    d="M 150, 225 A 100, 100, 0, 0, 1, 194, 119"
+    path_list = parse_svg_path(d)
+    assert len(path_list) == 1
+    bezier_path = path_list[0]
+    assert isinstance(bezier_path, BezierPath)
+    assert len(bezier_path.anchor_points) == 2
+    np.testing.assert_array_equal(bezier_path.start.pos, Vector(150.0,225.0))
+    np.testing.assert_array_equal(bezier_path.end.pos, Vector(194.0,119.0))
+
+def test_degenerate_arc_bezier():
+    """Arc begins and ends at same point should not be created"""
+    d="M 100, 100 A 100, 100, 0, 0, 1, 100, 100"
+    path_list = parse_svg_path(d)
+    assert len(path_list) == 1
+    bezier_path = path_list[0]
+    assert isinstance(bezier_path, BezierPath)
+    assert len(bezier_path.anchor_points) == 1
+
+def test_half_circle_arc_bezier():
+    d="M 100 100 A 100 100 0 1 1 300 100"
+    path_list = parse_svg_path(d)
+    assert len(path_list) == 1
+    bezier_path = path_list[0]
+    assert isinstance(bezier_path, BezierPath)
+    assert len(bezier_path.anchor_points) == 3
+    np.testing.assert_array_equal(bezier_path.start.pos, Vector(100,100.0))
+    np.testing.assert_array_almost_equal(bezier_path.anchor_points[1].pos, Vector(200.0,0.0))
+    np.testing.assert_array_equal(bezier_path.end.pos, Vector(300.0,100.0))
+
+def test_full_circle_arc_bezier():
+    d="M 100 100 A 100 100 0 1 1 300 100 A 100 100 0 1 1 100 100"
+    path_list = parse_svg_path(d)
+    assert len(path_list) == 1
+    bezier_path = path_list[0]
+    assert isinstance(bezier_path, BezierPath)
+    assert len(bezier_path.anchor_points) == 4
+    np.testing.assert_array_equal(bezier_path.start.pos, Vector(100,100.0))
+    np.testing.assert_array_almost_equal(bezier_path.anchor_points[1].pos, Vector(200.0,0.0))
+    np.testing.assert_array_almost_equal(bezier_path.anchor_points[2].pos, Vector(300.0,100.0))
+    np.testing.assert_array_equal(bezier_path.end.pos, Vector(200.0,200.0))
+
 def test_closed_path():
     d="M 0 0 L 10 0 L 10 10 Z"
     path_list = parse_svg_path(d)

@@ -1,10 +1,9 @@
 # svg_converter.py
 
 from typing import List
-import numpy as np
-from svgelements import Path, Move, Line, CubicBezier, QuadraticBezier, Close
 import re
-
+import math
+from svgelements import Path, Move, Line, CubicBezier, QuadraticBezier, Arc, Close
 
 from bezier_builder.bezier_path import BezierPath
 from bezier_builder.anchor_point import AnchorPoint
@@ -60,10 +59,23 @@ def parse_svg_path(d_string: str) -> List[BezierPath]:
                     end=end, 
                     path=current_path
                     )
+            elif isinstance(segment, Arc):
+                # Calculate number of segments based on angle approximatly 1 per 90 degrees
+                num_segments = int(math.ceil(abs(segment.sweep) / (math.pi/2)))
+                for bezier in segment.as_cubic_curves(arc_required=num_segments):
+                    start = Vector.as_vector(bezier.start)
+                    end = Vector.as_vector(bezier.end)
 
+                    append_bezier_to_path(
+                        handle_1=Vector.as_vector(bezier.control1) - start,
+                        handle_2=Vector.as_vector(bezier.control2) - end,
+                        end=end,
+                        path=current_path
+                        )
             elif isinstance(segment, (Line, Close)):
                 current_point = AnchorPoint(segment.end.x, segment.end.y)
                 current_path.append(current_point)
+
             if isinstance(segment, Close):
                 current_path.is_closed = True
 
@@ -85,7 +97,16 @@ def parse_svg_path(d_string: str) -> List[BezierPath]:
         path_list.append(current_path)
     return path_list
 
-def append_bezier_to_path(handle_1, handle_2, end, path):
+def append_bezier_to_path(handle_1: AnchorPoint, handle_2: AnchorPoint, end: AnchorPoint, path: BezierPath):
+    """
+    Appends a bezier curve to the given path object.
+
+    Args:
+        handle_1 (AnchorPoint): The relative handle point at the start of the bezier curve.
+        handle_2 (AnchorPoint): The relative handle point at the end of the bezier curve.
+        end (AnchorPoint): The end point of the bezier curve.
+        path (BezierPath): The path object to which the bezier curve will be appended.
+    """
     # Set previous anchors handle_out 
     path.end.handle_out = handle_1
     # Check if handles are aligned or symmetric
@@ -94,9 +115,6 @@ def append_bezier_to_path(handle_1, handle_2, end, path):
     current_point = AnchorPoint(end.x, end.y)
     current_point.handle_in = handle_2 
     path.append(current_point)
-                
-            
-                
 
 def build_svg_path(paths: List[BezierPath]) -> str:
     """
