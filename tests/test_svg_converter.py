@@ -271,9 +271,20 @@ def test_multiple_paths():
     svg_string = build_svg_path([path1, path2])
     assert svg_string == "M 60 20 L 10 70 L 110 70 L 60 20 M 60 20 C 40 20 0 50 10 70 C 20 90 100 90 110 70 C 120 50 80 20 60 20"
 
-def test_parse_svg_file():
+def test_parse_svg_file_basic_path():
     file_path = os.path.join(os.path.dirname(__file__), "data", "basic_path.svg")
     objects = parse_svg_file(file_path)
     assert len(objects) == 1
     assert isinstance(objects[0][0], BezierPath)
-    assert build_svg_path(objects[0]) == "M 10 10 L 90 90"
+    assert len(objects[0][0].anchor_points) == 2
+    assert objects[0][0].anchor_points[0].pos.x == 10
+    assert objects[0][0].anchor_points[0].pos.y == 10
+    assert objects[0][0].anchor_points[1].pos.x == 90
+    assert objects[0][0].anchor_points[1].pos.y == 90
+
+def test_parse_svg_file_shapes():
+    file_path = os.path.join(os.path.dirname(__file__), "data", "shapes.svg")
+    objects = parse_svg_file(file_path)
+    assert len(objects) >= 3
+    for object in objects:
+        assert isinstance(object[0], BezierPath)
