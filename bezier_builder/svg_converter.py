@@ -3,7 +3,7 @@
 from typing import List
 import re
 import math
-from svgelements import Path, Move, Line, CubicBezier, QuadraticBezier, Arc, Close
+from svgelements import SVG, Shape, Path, Move, Line, CubicBezier, QuadraticBezier, Arc, Close
 
 from bezier_builder.bezier_path import BezierPath
 from bezier_builder.anchor_point import AnchorPoint
@@ -169,3 +169,12 @@ def bezier_string(prev, curr):
 
     return str
 
+def parse_svg_file(file_path: str) -> List[List[BezierPath]]:
+    svg = SVG.parse(file_path)
+    objects = []
+    
+    for element in svg.elements():
+        if isinstance(element, Path) or isinstance(element, Shape):
+            objects.append(parse_svg_path(element.reify().d()))
+
+    return objects

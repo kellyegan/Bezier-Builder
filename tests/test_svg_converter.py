@@ -1,9 +1,11 @@
 import pytest
 import numpy as np
-from bezier_builder.svg_converter import parse_svg_path, build_svg_path
+import os
+
+from bezier_builder.svg_converter import parse_svg_path, build_svg_path, parse_svg_file
 from bezier_builder.bezier_path import BezierPath
-from bezier_builder.anchor_point import AnchorPoint
 from bezier_builder.vector import Vector
+
 
 def test_move_to_line_to():
     d = "M 10 20 L 30 40"
@@ -267,4 +269,11 @@ def test_multiple_paths():
     path2.create(pos=Vector(110, 70), handle_in=Vector(-10,20), handle_out=Vector(10,-20))
     path2.is_closed = True
     svg_string = build_svg_path([path1, path2])
-    assert svg_string == "M 60 20 L 10 70 L 110 70 L 60 20 M 60 20 C 40 20 0 50 10 70 C 20 90 100 90 110 70 C 120 50 80 20 60 20"    
+    assert svg_string == "M 60 20 L 10 70 L 110 70 L 60 20 M 60 20 C 40 20 0 50 10 70 C 20 90 100 90 110 70 C 120 50 80 20 60 20"
+
+def test_parse_svg_file():
+    file_path = os.path.join(os.path.dirname(__file__), "data", "basic_path.svg")
+    objects = parse_svg_file(file_path)
+    assert len(objects) == 1
+    assert isinstance(objects[0][0], BezierPath)
+    assert build_svg_path(objects[0]) == "M 10 10 L 90 90"
