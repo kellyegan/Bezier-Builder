@@ -170,6 +170,9 @@ def bezier_string(prev, curr):
     return str
 
 def parse_svg_file(file_path: str) -> List[List[BezierPath]]:
+    """
+    Parse all shapes and paths in an SVG file and return a list of lists of BezierPaths.
+    """
     svg = SVG.parse(file_path)
     objects = []
     
