@@ -294,14 +294,14 @@ def test_build_curve_string():
 
 def test_closed_path(triangle_path, heart_path):
     svg_string = build_svg_path([triangle_path])
-    assert svg_string == "M 50 0 L 100 86.6 L 0 86.6 L 50 0 Z"
+    assert svg_string == "M 50 0 L 100 86.6 L 0 86.6 Z"
 
     svg_string = build_svg_path([heart_path])
     assert svg_string == "M 99 40 C 92 70 50 100 50 100 C 50 100 8 70 1 40 C -6 10 15 0 25 0 C 35 0 46 4 50 20 C 54 4 65 0 75 0 C 85 0 106 10 99 40 Z"
 
 def test_multiple_paths(triangle_path, heart_path):
     svg_string = build_svg_path([triangle_path, heart_path])
-    assert svg_string == "M 50 0 L 100 86.6 L 0 86.6 L 50 0 Z M 99 40 C 92 70 50 100 50 100 C 50 100 8 70 1 40 C -6 10 15 0 25 0 C 35 0 46 4 50 20 C 54 4 65 0 75 0 C 85 0 106 10 99 40 Z"
+    assert svg_string == "M 50 0 L 100 86.6 L 0 86.6 Z M 99 40 C 92 70 50 100 50 100 C 50 100 8 70 1 40 C -6 10 15 0 25 0 C 35 0 46 4 50 20 C 54 4 65 0 75 0 C 85 0 106 10 99 40 Z"
 
 def test_parse_svg_file_basic_path():
     file_path = os.path.join(os.path.dirname(__file__), "data", "basic_path.svg")

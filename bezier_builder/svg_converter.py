@@ -139,7 +139,8 @@ def build_svg_path(paths: List[BezierPath]) -> str:
             previous = current
 
         if path.is_closed:
-            svg_string += bezier_string(path.end, path.start)
+            if not (path.end.handle_out.is_close_to_zero() and path.start.handle_in.is_close_to_zero()):
+                svg_string += bezier_string(path.end, path.start)
             svg_string += "Z"
 
         svg_string += " "

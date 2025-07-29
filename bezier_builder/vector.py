@@ -56,3 +56,6 @@ class Vector(np.ndarray):
     def is_close(self, other: 'Vector', tolerance=1e-6) -> bool:
         return np.allclose(self, other, atol=tolerance)
     
+    def is_close_to_zero(self, tolerance=1e-6) -> bool:
+        return self.magnitude() < tolerance
+    
