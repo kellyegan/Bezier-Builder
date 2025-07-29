@@ -7,78 +7,58 @@ from bezier_builder.bezier_path import BezierPath
 from bezier_builder.vector import Vector
 
 @pytest.fixture
-def heart_path():
-    offset = Vector(100, 100)
+def triangle_path() -> BezierPath:
+    # Create an equallateral triangle
+    # M 50 0 L 100 86.6 L 0 86.6 Z
+    offset = Vector(0, 0)
 
     path = BezierPath()
-    path.create(
-        pos=Vector(99, 40) + offset, 
-        handle_in=Vector(7, -30), 
-        handle_out=Vector(-7, 30), 
-        handle_type="symmetric"
-        )
-    path.create(
-        pos=Vector(50, 100) + offset, 
-        handle_in=Vector(0, 0), 
-        handle_out=Vector(0, 0), 
-        handle_type="symmetric"
-        )
-    path.create(
-        pos=Vector(1, 40) + offset, 
-        handle_in=Vector(-7, 30), 
-        handle_out=Vector(7, 30), 
-        handle_type="symmetric"
-        )
-    path.create(
-        pos = Vector(25, 0) + offset, 
-        handle_in=Vector( -10, 0), 
-        handle_out=Vector( 10, 0), 
-        handle_type="symmetric"
-        )
-    path.create(
-        pos = Vector(50, 20) + offset, 
-        handle_in=Vector(-4, -16), 
-        handle_out=Vector(4, -16), 
-        handle_type="symmetric"
-        )
-    path.create(
-        pos = Vector(75, 0) + offset, 
-        handle_in=Vector(-10, 0), 
-        handle_out=Vector(10, 0), 
-        handle_type="symmetric"
-        )
-    
+    path.create(pos=Vector(50, 0) + offset)
+    path.create(pos=Vector(100, 86.6) + offset)
+    path.create(pos=Vector(0, 86.6) + offset)
     path.is_closed = True
 
     return path
 
 @pytest.fixture
-def triangle_path():
-    offset = Vector(0, 0)
-
+def heart_path():
+    "M 99 40 C 92 70 50 100 50 100 C 50 100 8 70 1 40 C -6 10 15 0 25 0 C 35 0 46 4 50 20 C 54 4 65 0 75 0 C 85 0 106 10 99 40"
     path = BezierPath()
     path.create(
-        pos=Vector(50, 0) + offset,
-        handle_in=Vector(0, 0), 
-        handle_out=Vector(0, 0), 
-        handle_type="symmetric"
+        pos=Vector(99, 40), 
+        handle_in=Vector(7, -30), 
+        handle_out=Vector(-7, 30), 
+        type="symmetric"
+        )
+    path.create( pos=Vector(50, 100) )
+    path.create(
+        pos=Vector(1, 40), 
+        handle_in=Vector(7, 30), 
+        handle_out=Vector(-7, -30), 
+        type="symmetric"
         )
     path.create(
-        pos=Vector(100, 86.6) + offset,
-        handle_in=Vector(0, 0), 
-        handle_out=Vector(0, 0), 
-        handle_type="symmetric"
+        pos = Vector(25, 0), 
+        handle_in=Vector( -10, 0), 
+        handle_out=Vector( 10, 0), 
+        type="symmetric"
         )
     path.create(
-        pos=Vector(0, 86.6) + offset,
-        handle_in=Vector(0, 0), 
-        handle_out=Vector(0, 0), 
-        handle_type="symmetric"
+        pos = Vector(50, 20), 
+        handle_in=Vector(-4, -16), 
+        handle_out=Vector(4, -16),
+        )
+    path.create(
+        pos = Vector(75, 0), 
+        handle_in=Vector(-10, 0), 
+        handle_out=Vector(10, 0), 
+        type="symmetric"
         )
     
     path.is_closed = True
 
     return path
+
 
 def create_sample_bezier():
     objects = []
@@ -312,25 +292,12 @@ def test_build_curve_string():
     svg_string = build_svg_path([path])
     assert svg_string == "M 100 100 C 120 80 180 80 200 100"
 
-def test_closed_path():
-    # Closed linear path
-    path = BezierPath()
-    path.create(pos=Vector(60, 20))
-    path.create(pos=Vector(10, 70))
-    path.create(pos=Vector(110, 70))
-    path.is_closed = True
-    svg_string = build_svg_path([path])
-    assert svg_string == "M 60 20 L 10 70 L 110 70 L 60 20"
+def test_closed_path(triangle_path, heart_path):
+    svg_string = build_svg_path([triangle_path])
+    assert svg_string == "M 50 0 L 100 86.6 L 0 86.6 L 50 0"
 
-    # Closed curved path
-    path = BezierPath()
-    path.create(pos=Vector(60, 20), handle_in=Vector(20,0), handle_out=Vector(-20,0))
-    path.create(pos=Vector(10, 70), handle_in=Vector(-10,-20), handle_out=Vector(10,20))
-    path.create(pos=Vector(110, 70), handle_in=Vector(-10,20), handle_out=Vector(10,-20))
-    path.is_closed = True
-    svg_string = build_svg_path([path])
-    assert svg_string == "M 60 20 C 40 20 0 50 10 70 C 20 90 100 90 110 70 C 120 50 80 20 60 20"
-
+    svg_string = build_svg_path([heart_path])
+    assert svg_string == "M 99 40 C 92 70 50 100 50 100 C 50 100 8 70 1 40 C -6 10 15 0 25 0 C 35 0 46 4 50 20 C 54 4 65 0 75 0 C 85 0 106 10 99 40"
 def test_multiple_paths():
     # Closed linear path
     path1 = BezierPath()
@@ -367,4 +334,7 @@ def test_parse_svg_file_shapes():
         assert isinstance(object[0], BezierPath)
 
 def test_save_bezierpath_to_svg():
+    objects = []
+    # objects.append(heart_path)
+    # objects.append(triangle_path)
     pass
