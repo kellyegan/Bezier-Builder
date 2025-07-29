@@ -73,3 +73,17 @@ def test_mirrors():
     assert vector1.mirrors(vector2)  
     vector2 = Vector(-8, -12)
     assert not vector1.mirrors(vector2)  
+
+def test_isclose():
+    vector1 = Vector(3, 7)
+    vector2 = Vector(3.00001, 6.999997)
+    assert vector1.is_close(vector2)
+
+    vector2.x = 3.0001
+    assert not vector1.is_close(vector2)
+
+    vector2.x = 3.0000
+    vector2.y = 6.9998
+    assert not vector1.is_close(vector2)
+
+    assert vector1.is_close(vector2, tolerance = 0.0002)
