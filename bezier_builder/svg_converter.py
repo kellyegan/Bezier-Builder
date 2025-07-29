@@ -140,6 +140,9 @@ def build_svg_path(paths: List[BezierPath]) -> str:
 
         if path.is_closed:
             svg_string += bezier_string(path.end, path.start)
+            svg_string += "Z"
+
+        svg_string += " "
             
     return svg_string.rstrip()
 

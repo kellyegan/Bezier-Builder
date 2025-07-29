@@ -22,7 +22,7 @@ def triangle_path() -> BezierPath:
 
 @pytest.fixture
 def heart_path():
-    "M 99 40 C 92 70 50 100 50 100 C 50 100 8 70 1 40 C -6 10 15 0 25 0 C 35 0 46 4 50 20 C 54 4 65 0 75 0 C 85 0 106 10 99 40"
+    "M 99 40 C 92 70 50 100 50 100 C 50 100 8 70 1 40 C -6 10 15 0 25 0 C 35 0 46 4 50 20 C 54 4 65 0 75 0 C 85 0 106 10 99 40 Z"
     path = BezierPath()
     path.create(
         pos=Vector(99, 40), 
@@ -294,26 +294,14 @@ def test_build_curve_string():
 
 def test_closed_path(triangle_path, heart_path):
     svg_string = build_svg_path([triangle_path])
-    assert svg_string == "M 50 0 L 100 86.6 L 0 86.6 L 50 0"
+    assert svg_string == "M 50 0 L 100 86.6 L 0 86.6 L 50 0 Z"
 
     svg_string = build_svg_path([heart_path])
-    assert svg_string == "M 99 40 C 92 70 50 100 50 100 C 50 100 8 70 1 40 C -6 10 15 0 25 0 C 35 0 46 4 50 20 C 54 4 65 0 75 0 C 85 0 106 10 99 40"
-def test_multiple_paths():
-    # Closed linear path
-    path1 = BezierPath()
-    path1.create(pos=Vector(60, 20))
-    path1.create(pos=Vector(10, 70))
-    path1.create(pos=Vector(110, 70))
-    path1.is_closed = True
+    assert svg_string == "M 99 40 C 92 70 50 100 50 100 C 50 100 8 70 1 40 C -6 10 15 0 25 0 C 35 0 46 4 50 20 C 54 4 65 0 75 0 C 85 0 106 10 99 40 Z"
 
-    # Closed curved path
-    path2 = BezierPath()
-    path2.create(pos=Vector(60, 20), handle_in=Vector(20,0), handle_out=Vector(-20,0))
-    path2.create(pos=Vector(10, 70), handle_in=Vector(-10,-20), handle_out=Vector(10,20))
-    path2.create(pos=Vector(110, 70), handle_in=Vector(-10,20), handle_out=Vector(10,-20))
-    path2.is_closed = True
-    svg_string = build_svg_path([path1, path2])
-    assert svg_string == "M 60 20 L 10 70 L 110 70 L 60 20 M 60 20 C 40 20 0 50 10 70 C 20 90 100 90 110 70 C 120 50 80 20 60 20"
+def test_multiple_paths(triangle_path, heart_path):
+    svg_string = build_svg_path([triangle_path, heart_path])
+    assert svg_string == "M 50 0 L 100 86.6 L 0 86.6 L 50 0 Z M 99 40 C 92 70 50 100 50 100 C 50 100 8 70 1 40 C -6 10 15 0 25 0 C 35 0 46 4 50 20 C 54 4 65 0 75 0 C 85 0 106 10 99 40 Z"
 
 def test_parse_svg_file_basic_path():
     file_path = os.path.join(os.path.dirname(__file__), "data", "basic_path.svg")
