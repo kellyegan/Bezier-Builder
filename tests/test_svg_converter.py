@@ -6,6 +6,84 @@ from bezier_builder.svg_converter import parse_svg_path, build_svg_path, parse_s
 from bezier_builder.bezier_path import BezierPath
 from bezier_builder.vector import Vector
 
+@pytest.fixture
+def heart_path():
+    offset = Vector(100, 100)
+
+    path = BezierPath()
+    path.create(
+        pos=Vector(99, 40) + offset, 
+        handle_in=Vector(7, -30), 
+        handle_out=Vector(-7, 30), 
+        handle_type="symmetric"
+        )
+    path.create(
+        pos=Vector(50, 100) + offset, 
+        handle_in=Vector(0, 0), 
+        handle_out=Vector(0, 0), 
+        handle_type="symmetric"
+        )
+    path.create(
+        pos=Vector(1, 40) + offset, 
+        handle_in=Vector(-7, 30), 
+        handle_out=Vector(7, 30), 
+        handle_type="symmetric"
+        )
+    path.create(
+        pos = Vector(25, 0) + offset, 
+        handle_in=Vector( -10, 0), 
+        handle_out=Vector( 10, 0), 
+        handle_type="symmetric"
+        )
+    path.create(
+        pos = Vector(50, 20) + offset, 
+        handle_in=Vector(-4, -16), 
+        handle_out=Vector(4, -16), 
+        handle_type="symmetric"
+        )
+    path.create(
+        pos = Vector(75, 0) + offset, 
+        handle_in=Vector(-10, 0), 
+        handle_out=Vector(10, 0), 
+        handle_type="symmetric"
+        )
+    
+    path.is_closed = True
+
+    return path
+
+@pytest.fixture
+def triangle_path():
+    offset = Vector(0, 0)
+
+    path = BezierPath()
+    path.create(
+        pos=Vector(50, 0) + offset,
+        handle_in=Vector(0, 0), 
+        handle_out=Vector(0, 0), 
+        handle_type="symmetric"
+        )
+    path.create(
+        pos=Vector(100, 86.6) + offset,
+        handle_in=Vector(0, 0), 
+        handle_out=Vector(0, 0), 
+        handle_type="symmetric"
+        )
+    path.create(
+        pos=Vector(0, 86.6) + offset,
+        handle_in=Vector(0, 0), 
+        handle_out=Vector(0, 0), 
+        handle_type="symmetric"
+        )
+    
+    path.is_closed = True
+
+    return path
+
+def create_sample_bezier():
+    objects = []
+    shape = []
+
 
 def test_move_to_line_to():
     d = "M 10 20 L 30 40"
@@ -219,7 +297,6 @@ def test_closed_smoothly():
 
     for anchor in bezier_path:
         assert anchor.handle_type == "aligned"
-    
 
 def test_build_line_string():
     path = BezierPath()
@@ -288,3 +365,6 @@ def test_parse_svg_file_shapes():
     assert len(objects) >= 3
     for object in objects:
         assert isinstance(object[0], BezierPath)
+
+def test_save_bezierpath_to_svg():
+    pass
