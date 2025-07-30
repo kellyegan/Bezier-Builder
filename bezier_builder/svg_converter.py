@@ -61,7 +61,12 @@ def parse_svg_path(d_string: str) -> List[BezierPath]:
                     )
             elif isinstance(segment, Arc):
                 # Calculate number of segments based on angle approximatly 1 per 90 degrees
-                num_segments = int(math.ceil(abs(segment.sweep) / (math.pi/2)))
+                sweep = abs(segment.sweep)
+                num_segments = 1
+                if sweep > math.tau / 4.0000:
+                    num_segments = int(math.floor(sweep / (math.tau / 4.0000)))
+
+                print(num_segments,abs(segment.sweep) )
                 for bezier in segment.as_cubic_curves(arc_required=num_segments):
                     start = Vector.as_vector(bezier.start)
                     end = Vector.as_vector(bezier.end)
@@ -182,7 +187,7 @@ def parse_svg_file(file_path: str) -> List[List[BezierPath]]:
     
     for element in svg.elements():
         if isinstance(element, Path) or isinstance(element, Shape):
-            objects.append(parse_svg_path(element.reify().d()))
+            objects.append(parse_svg_path(element.d(relative=False, transformed=True)))
 
     return objects
 
@@ -198,3 +203,12 @@ def create_svg_string(objects: List[List[BezierPath]]) -> str:
         svg.append(path)
 
     return svg.string_xml()
+
+def save_svg_file(filepath: str, objects: List[List[BezierPath]]) -> None:
+    """
+    Save a list of lists of BezierPaths to an SVG file.
+    """
+    pass
+
+#     with open(filepath, "w") as f:
+#         f.write(create_svg_string(objects))
