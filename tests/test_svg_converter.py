@@ -2,7 +2,7 @@ import pytest
 import numpy as np
 import os
 
-from bezier_builder.svg_converter import parse_svg_path, build_svg_path, parse_svg_file
+from bezier_builder.svg_converter import parse_svg_path, build_svg_path, parse_svg_file, create_svg_string
 from bezier_builder.bezier_path import BezierPath
 from bezier_builder.vector import Vector
 
@@ -283,25 +283,25 @@ def test_build_line_string():
     path.create(pos=Vector(10, 20))
     path.create(pos=Vector(30, 40))
     svg_string = build_svg_path([path])
-    assert svg_string == "M 10 20 L 30 40"
+    assert svg_string == "M 10,20 L 30,40"
 
 def test_build_curve_string():
     path = BezierPath()
     path.create(pos=Vector(100, 100), handle_out=Vector(20, -20))
     path.create(pos=Vector(200, 100), handle_in=Vector(-20, -20))
     svg_string = build_svg_path([path])
-    assert svg_string == "M 100 100 C 120 80 180 80 200 100"
+    assert svg_string == "M 100,100 C 120,80 180,80 200,100"
 
 def test_closed_path(triangle_path, heart_path):
     svg_string = build_svg_path([triangle_path])
-    assert svg_string == "M 50 0 L 100 86.6 L 0 86.6 Z"
+    assert svg_string == "M 50,0 L 100,86.6 L 0,86.6 Z"
 
     svg_string = build_svg_path([heart_path])
-    assert svg_string == "M 99 40 C 92 70 50 100 50 100 C 50 100 8 70 1 40 C -6 10 15 0 25 0 C 35 0 46 4 50 20 C 54 4 65 0 75 0 C 85 0 106 10 99 40 Z"
+    assert svg_string == "M 99,40 C 92,70 50,100 50,100 C 50,100 8,70 1,40 C -6,10 15,0 25,0 C 35,0 46,4 50,20 C 54,4 65,0 75,0 C 85,0 106,10 99,40 Z"
 
 def test_multiple_paths(triangle_path, heart_path):
     svg_string = build_svg_path([triangle_path, heart_path])
-    assert svg_string == "M 50 0 L 100 86.6 L 0 86.6 Z M 99 40 C 92 70 50 100 50 100 C 50 100 8 70 1 40 C -6 10 15 0 25 0 C 35 0 46 4 50 20 C 54 4 65 0 75 0 C 85 0 106 10 99 40 Z"
+    assert svg_string == "M 50,0 L 100,86.6 L 0,86.6 Z M 99,40 C 92,70 50,100 50,100 C 50,100 8,70 1,40 C -6,10 15,0 25,0 C 35,0 46,4 50,20 C 54,4 65,0 75,0 C 85,0 106,10 99,40 Z"
 
 def test_parse_svg_file_basic_path():
     file_path = os.path.join(os.path.dirname(__file__), "data", "basic_path.svg")
@@ -321,8 +321,14 @@ def test_parse_svg_file_shapes():
     for object in objects:
         assert isinstance(object[0], BezierPath)
 
-def test_save_bezierpath_to_svg():
+def test_create_bezierpath_to_svg(heart_path, triangle_path):
     objects = []
-    # objects.append(heart_path)
-    # objects.append(triangle_path)
+    objects.append([heart_path])
+    objects.append([triangle_path])
+    svg_string = create_svg_string(objects)
+
+    assert svg_string == """<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:ev="http://www.w3.org/2001/xml-events" width="100%" height="100%">\
+<path d="M 99,40 C 92,70 50,100 50,100 C 50,100 8,70 1,40 C -6,10 15,0 25,0 C 35,0 46,4 50,20 C 54,4 65,0 75,0 C 85,0 106,10 99,40 Z" pathd_loaded="True" stroke="#000000" stroke-width="1.0" fill="none" />\
+<path d="M 50,0 L 100,86.6 L 0,86.6 Z" pathd_loaded="True" stroke="#000000" stroke-width="1.0" fill="none" />\
+</svg>"""
     pass

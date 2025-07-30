@@ -130,7 +130,7 @@ def build_svg_path(paths: List[BezierPath]) -> str:
     svg_string = ""
     
     for path in paths:
-        svg_string += f"M {nf(path.start.pos.x)} {nf(path.start.pos.y)} "
+        svg_string += f"M {nf(path.start.pos.x)},{nf(path.start.pos.y)} "
         previous = path.start
 
         for i in range(1, len(path.anchor_points)):
@@ -163,13 +163,13 @@ def bezier_string(prev, curr):
     str = ""
     
     if prev.handle_out.magnitude() == 0 and curr.handle_in.magnitude() == 0:
-        str += f"L {nf(curr.pos.x)} {nf(curr.pos.y)} "
+        str += f"L {nf(curr.pos.x)},{nf(curr.pos.y)} "
     else:
         c1 = prev.pos + prev.handle_out
         c2 = curr.pos + curr.handle_in
-        str += f"C {nf(c1.x)} {nf(c1.y)} "
-        str += f"{nf(c2.x)} {nf(c2.y)} "
-        str += f"{nf(curr.pos.x)} {nf(curr.pos.y)} "
+        str += f"C {nf(c1.x)},{nf(c1.y)} "
+        str += f"{nf(c2.x)},{nf(c2.y)} "
+        str += f"{nf(curr.pos.x)},{nf(curr.pos.y)} "
 
     return str
 
@@ -185,3 +185,16 @@ def parse_svg_file(file_path: str) -> List[List[BezierPath]]:
             objects.append(parse_svg_path(element.reify().d()))
 
     return objects
+
+def create_svg_string(objects: List[List[BezierPath]]) -> str:
+    """
+    Convert a list of lists of BezierPaths to an SVG string.
+    """
+    svg = SVG()
+    
+    for object in objects:
+        d_string = build_svg_path(object)
+        path = Path(d=d_string, fill="none", stroke="#000")
+        svg.append(path)
+
+    return svg.string_xml()
