@@ -42,7 +42,7 @@ def parse_path_string(d_string: str) -> BezierShape:
                 start = Vector.as_vector(segment.start)
                 end = Vector.as_vector(segment.end)
 
-                append_bezier_to_path(
+                append_segment_to_path(
                     handle_1=Vector.as_vector(segment.control1) - start,
                     handle_2=Vector.as_vector(segment.control2) - end,
                     end=end,
@@ -53,7 +53,7 @@ def parse_path_string(d_string: str) -> BezierShape:
                 control = Vector.as_vector(segment.control)
                 end = Vector.as_vector(segment.end)
 
-                append_bezier_to_path(
+                append_segment_to_path(
                     handle_1=(2/3) * (control - start), 
                     handle_2=(2/3) * (control - end), 
                     end=end, 
@@ -71,7 +71,7 @@ def parse_path_string(d_string: str) -> BezierShape:
                     start = Vector.as_vector(bezier.start)
                     end = Vector.as_vector(bezier.end)
 
-                    append_bezier_to_path(
+                    append_segment_to_path(
                         handle_1=Vector.as_vector(bezier.control1) - start,
                         handle_2=Vector.as_vector(bezier.control2) - end,
                         end=end,
@@ -102,7 +102,7 @@ def parse_path_string(d_string: str) -> BezierShape:
         shape.append(current_path)
     return shape
 
-def append_bezier_to_path(handle_1: AnchorPoint, handle_2: AnchorPoint, end: AnchorPoint, path: BezierPath):
+def append_segment_to_path(handle_1: AnchorPoint, handle_2: AnchorPoint, end: AnchorPoint, path: BezierPath):
     """
     Appends a bezier curve to the given path object.
 
