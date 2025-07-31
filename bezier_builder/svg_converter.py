@@ -5,12 +5,12 @@ import re
 import math
 from svgelements import SVG, Shape, Path, Move, Line, CubicBezier, QuadraticBezier, Arc, Close
 
-from bezier_builder.bezier_path import BezierPath
+from bezier_builder.bezier_path import BezierPath, BezierShape
 from bezier_builder.anchor_point import AnchorPoint
 from bezier_builder.vector import Vector
 
 
-def parse_svg_path(d_string: str) -> List[BezierPath]:
+def parse_svg_path(d_string: str) -> BezierShape:
     """
     Parses an SVG path 'd' attribute string into a list of BezierPath objects
     using the 'svgelements' library.
@@ -21,7 +21,7 @@ def parse_svg_path(d_string: str) -> List[BezierPath]:
     Returns:
         A list of BezierPath objects.
     """
-    path_list = []
+    shape = BezierShape()
     svg_path = Path(d_string)
 
     for subpath in svg_path.as_subpaths():
@@ -99,8 +99,8 @@ def parse_svg_path(d_string: str) -> List[BezierPath]:
                     current_path.anchor_points.pop()
                     current_path.is_closed = True
 
-        path_list.append(current_path)
-    return path_list
+        shape.append(current_path)
+    return shape
 
 def append_bezier_to_path(handle_1: AnchorPoint, handle_2: AnchorPoint, end: AnchorPoint, path: BezierPath):
     """
@@ -121,7 +121,7 @@ def append_bezier_to_path(handle_1: AnchorPoint, handle_2: AnchorPoint, end: Anc
     current_point.handle_in = handle_2 
     path.append(current_point)
 
-def build_svg_path(paths: List[BezierPath]) -> str:
+def build_svg_path(shape: BezierShape) -> str:
     """
     Builds an SVG path 'd' attribute string from a list of BezierPath objects.
 
@@ -134,7 +134,7 @@ def build_svg_path(paths: List[BezierPath]) -> str:
 
     svg_string = ""
     
-    for path in paths:
+    for path in shape:
         svg_string += f"M {nf(path.start.pos.x)},{nf(path.start.pos.y)} "
         previous = path.start
 
@@ -178,33 +178,34 @@ def bezier_string(prev, curr):
 
     return str
 
-def parse_svg_file(file_path: str) -> List[List[BezierPath]]:
+def parse_svg_file(file_path: str) -> List[BezierShape]:
     """
     Parse all shapes and paths in an SVG file and return a list of lists of BezierPaths.
     """
     svg = SVG.parse(file_path)
-    objects = []
+    shapes = []
     
     for element in svg.elements():
         if isinstance(element, Path) or isinstance(element, Shape):
-            objects.append(parse_svg_path(element.d(relative=False, transformed=True)))
+            shapes.append(parse_svg_path(element.d(relative=False, transformed=True)))
 
-    return objects
+    return shapes
 
-def create_svg_string(objects: List[List[BezierPath]]) -> str:
+def create_svg_string(shapes: List[BezierShape]) -> str:
     """
     Convert a list of lists of BezierPaths to an SVG string.
     """
     svg = SVG()
     
-    for object in objects:
+    for object in shapes:
+        print(type(object))
         d_string = build_svg_path(object)
         path = Path(d=d_string, fill="none", stroke="#000")
         svg.append(path)
 
     return svg.string_xml()
 
-def save_svg_file(filepath: str, objects: List[List[BezierPath]]) -> None:
+def save_svg_file(filepath: str, shapes: List[BezierShape]) -> None:
     """
     Save a list of lists of BezierPaths to an SVG file.
     """

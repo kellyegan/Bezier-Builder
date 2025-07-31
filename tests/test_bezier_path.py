@@ -1,18 +1,25 @@
 import pytest
 import numpy as np
 
-from bezier_builder.bezier_path import BezierPath
+from bezier_builder.bezier_path import BezierPath, BezierShape
 from bezier_builder.anchor_point import AnchorPoint
 from bezier_builder.vector import Vector
 
 @pytest.fixture
 def path():
     """
-    This function is used to create an instance of the AnchorPoint class.
+    This function is used to create an instance of the BezierPath class.
     """
     return BezierPath()
 
-def test_initialize(path: BezierPath):
+@pytest.fixture
+def shape():
+    """
+    This function is used to create an instance of the BezierShape class.
+    """
+    return BezierShape()
+
+def test_initialize_path(path: BezierPath):
     """
     Test initializing BezierPath object and defaults
     """
@@ -82,3 +89,11 @@ def test_start_end_previous_points():
     np.testing.assert_array_equal(path.previous_point.pos,  Vector(15,20))
     assert isinstance(path.end, AnchorPoint)
     np.testing.assert_array_equal(path.end.pos, Vector(35,40))
+
+def test_initialize_shape(shape: BezierShape, path: BezierPath):
+    """
+    Test initializing BezierPath object and defaults
+    """
+    assert shape != None
+    shape.append(path)
+    assert len(shape) == 1

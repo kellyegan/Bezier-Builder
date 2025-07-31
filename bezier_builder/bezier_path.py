@@ -1,6 +1,6 @@
+from collections import UserList
 from bezier_builder.anchor_point import AnchorPoint
 from bezier_builder.vector import Vector
-
 
 class BezierPath:
     """
@@ -65,3 +65,12 @@ class BezierPath:
     def __repr__(self):
         return f"BezierPath(points={len(self._anchor_points)}, is_closed={self.is_closed})"
 
+
+class BezierShape(UserList):
+    """
+    Class to define an object with multiple bezier paths.
+    This can be used to create more complex shapes.
+    """
+
+    def __init__(self, data=None):
+        super().__init__(data or [])

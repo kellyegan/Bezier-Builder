@@ -4,7 +4,7 @@ import os
 from filecmp import cmp
 
 from bezier_builder.svg_converter import parse_svg_path, build_svg_path, parse_svg_file, create_svg_string, save_svg_file
-from bezier_builder.bezier_path import BezierPath
+from bezier_builder.bezier_path import BezierPath, BezierShape
 from bezier_builder.vector import Vector
 
 @pytest.fixture
@@ -22,7 +22,12 @@ def triangle_path() -> BezierPath:
     return path
 
 @pytest.fixture
-def heart_path():
+def triangle_shape(path: BezierPath) -> BezierShape:
+    # Create an equallateral triangle
+    return BezierShape([path])
+
+@pytest.fixture
+def heart_path() -> BezierPath:
     "M 99,40 C 92,70 50,100 50,100 C 50,100 8,70 1,40 C -6,10 15,0 25,0 C 35,0 46,4 50,20 C 54,4 65,0 75,0 C 85,0 106,10 99,40 Z"
     path = BezierPath()
     path.create(
@@ -60,11 +65,13 @@ def heart_path():
 
     return path
 
+@pytest.fixture
+def heart_shape(path: BezierPath) -> BezierShape:
+    return BezierShape([path])
 
 def create_sample_bezier():
     objects = []
     shape = []
-
 
 def test_move_to_line_to():
     d = "M 10 20 L 30 40"
@@ -165,9 +172,9 @@ def test_degenerate_arc_bezier():
 
 def test_quarter_circle_arc_bezier():
     d="M 0,0 A 100,100 0 0 0 100,100"
-    path_list = parse_svg_path(d)
-    assert len(path_list) == 1
-    bezier_path = path_list[0]
+    shape = parse_svg_path(d)
+    assert len(shape) == 1
+    bezier_path = shape[0]
     assert isinstance(bezier_path, BezierPath)
     assert len(bezier_path.anchor_points) == 2
     np.testing.assert_array_equal(bezier_path.start.pos, Vector(0,0.0))
@@ -175,9 +182,9 @@ def test_quarter_circle_arc_bezier():
 
 def test_half_circle_arc_bezier():
     d="M 100 100 A 100 100 0 1 1 300 100"
-    path_list = parse_svg_path(d)
-    assert len(path_list) == 1
-    bezier_path = path_list[0]
+    shape = parse_svg_path(d)
+    assert len(shape) == 1
+    bezier_path = shape[0]
     assert isinstance(bezier_path, BezierPath)
     assert len(bezier_path.anchor_points) == 3
     np.testing.assert_array_equal(bezier_path.start.pos, Vector(100,100.0))
@@ -186,9 +193,9 @@ def test_half_circle_arc_bezier():
 
 def test_full_circle_arc_bezier():
     d="M 100 100 A 100 100 0 1 1 300 100 A 100 100 0 1 1 100 100"
-    path_list = parse_svg_path(d)
-    assert len(path_list) == 1
-    bezier_path = path_list[0]
+    shape = parse_svg_path(d)
+    assert len(shape) == 1
+    bezier_path = shape[0]
     assert isinstance(bezier_path, BezierPath)
     assert len(bezier_path.anchor_points) == 4
     np.testing.assert_array_equal(bezier_path.start.pos, Vector(100,100.0))
@@ -198,23 +205,23 @@ def test_full_circle_arc_bezier():
 
 def test_closed_path():
     d="M 0 0 L 10 0 L 10 10 Z"
-    path_list = parse_svg_path(d)
-    assert len(path_list) == 1, "Expected list of one BezierPath"
-    bezier_path = path_list[0]
+    shape = parse_svg_path(d)
+    assert len(shape) == 1, "Expected list of one BezierPath"
+    bezier_path = shape[0]
     assert isinstance(bezier_path, BezierPath)
     assert bezier_path.is_closed == True
 
 def test_multiple_subpaths():
     d="M 0 0 L 10 10 M 50 50 L 60 60"
-    path_list = parse_svg_path(d)
-    assert len(path_list) == 2, "Expected list of two BezierPath"
-    bezier_path_1 = path_list[0]
+    shape = parse_svg_path(d)
+    assert len(shape) == 2, "Expected list of two BezierPath"
+    bezier_path_1 = shape[0]
     assert isinstance(bezier_path_1, BezierPath)
     anchor_1 = bezier_path_1.anchor_points[0]
     anchor_2 = bezier_path_1.anchor_points[1]
     np.testing.assert_array_equal(anchor_1.pos, [0.0, 0.0])
     np.testing.assert_array_equal(anchor_2.pos, [10.0, 10.0])
-    bezier_path_2 = path_list[1]
+    bezier_path_2 = shape[1]
     assert isinstance(bezier_path_2, BezierPath)
     anchor_1 = bezier_path_2.anchor_points[0]
     anchor_2 = bezier_path_2.anchor_points[1]
@@ -223,9 +230,9 @@ def test_multiple_subpaths():
 
 def test_symmetric_anchor():
     d="M 10 6 C 12 10, 17 20, 20 18 C 23 16, 24 8, 28 8"
-    path_list = parse_svg_path(d)
-    assert len(path_list) == 1, "Expected list of one BezierPath"
-    bezier_path = path_list[0]
+    shape = parse_svg_path(d)
+    assert len(shape) == 1, "Expected list of one BezierPath"
+    bezier_path = shape[0]
     assert isinstance(bezier_path, BezierPath)
     assert len(bezier_path.anchor_points) == 3
     anchor = bezier_path.anchor_points[1]
@@ -236,23 +243,23 @@ def test_symmetric_anchor():
 
 def test_aligned_anchor():
     d="M 10 6 C 12 10, 14 22, 20 18 C 23 16, 24 8, 28 8"
-    path_list = parse_svg_path(d)
-    bezier_path = path_list[0]
+    shape = parse_svg_path(d)
+    bezier_path = shape[0]
     assert len(bezier_path.anchor_points) == 3
     anchor = bezier_path.anchor_points[1]
     assert anchor.handle_type == "aligned"
 
 def test_closed_smoothly():
     d="M 190, 0 L 100, 110 L 200, 210 L 280, 100 L 190, 0"
-    path_list = parse_svg_path(d)
-    bezier_path = path_list[0]
+    shape = parse_svg_path(d)
+    bezier_path = shape[0]
     assert len(bezier_path.anchor_points) == 4
     assert bezier_path.is_closed == True
 
     # Create a path with a SYMMETRIC transition between start and end
     d="M 95 0 C 75 10, 80 100, 100 105 C 120 110, 140 65, 140 50 C 140 35, 115 -10, 95 0"
-    path_list = parse_svg_path(d)
-    bezier_path = path_list[0]
+    shape = parse_svg_path(d)
+    bezier_path = shape[0]
     assert len(bezier_path.anchor_points) == 3
     assert bezier_path.is_closed == True
 
@@ -261,8 +268,8 @@ def test_closed_smoothly():
 
     # Create a path with a ALIGNED transition between start and end
     d="M 95 0 C 65 15, 80 100, 100 105 C 140 115, 140 65, 140 50 C 140 25, 115 -10, 95 0"
-    path_list = parse_svg_path(d)
-    bezier_path = path_list[0]
+    shape = parse_svg_path(d)
+    bezier_path = shape[0]
     assert len(bezier_path.anchor_points) == 3
     assert bezier_path.is_closed == True
 
@@ -271,8 +278,8 @@ def test_closed_smoothly():
 
     # Check SYMMETRIC closed paths on quadratic beziers
     d="M -50 0 Q -50 50 0 50 Q 50, 50 50 0 Q 50 -50 0 -50 Q -50 -50 -50 0"
-    path_list = parse_svg_path(d)
-    bezier_path = path_list[0]
+    shape = parse_svg_path(d)
+    bezier_path = shape[0]
     assert len(bezier_path.anchor_points) == 4
     assert bezier_path.is_closed == True
 
@@ -281,8 +288,8 @@ def test_closed_smoothly():
 
     # Check ALIGNED closed paths on quadratic beziers
     d="M -50 0 Q -60 30 0 50 Q 30, 60 50 0 Q 60 -30 0 -50 Q -30 -60 -50 0"
-    path_list = parse_svg_path(d)
-    bezier_path = path_list[0]
+    shape = parse_svg_path(d)
+    bezier_path = shape[0]
     assert len(bezier_path.anchor_points) == 4
     assert bezier_path.is_closed == True
 
@@ -316,10 +323,11 @@ def test_multiple_paths(triangle_path, heart_path):
 
 def test_parse_svg_file_basic_path():
     file_path = os.path.join(os.path.dirname(__file__), "data", "triangle.svg")
-    objects = parse_svg_file(file_path)
-    assert len(objects) == 1
-    assert isinstance(objects[0][0], BezierPath)
-    anchor_points = objects[0][0].anchor_points
+    shapes = parse_svg_file(file_path)
+    assert len(shapes) == 1
+    assert isinstance(shapes[0], BezierShape)
+    assert isinstance(shapes[0][0], BezierPath)
+    anchor_points = shapes[0][0].anchor_points
 
     assert len(anchor_points) == 3
     assert anchor_points[0].pos.x == pytest.approx(100, abs=1e-6)
@@ -331,19 +339,22 @@ def test_parse_svg_file_basic_path():
 
 def test_parse_svg_file_shapes():
     file_path = os.path.join(os.path.dirname(__file__), "data", "shapes.svg")
-    objects = parse_svg_file(file_path)
-    assert len(objects) >= 3
-    for object in objects:
-        assert isinstance(object[0], BezierPath)
+    shapes = parse_svg_file(file_path)
+    assert len(shapes) >= 3
+    for shape in shapes:
+        assert isinstance(shape, BezierShape)
+        assert isinstance(shape[0], BezierPath)
 
-    assert len(objects[0][0].anchor_points) == 4
-    assert len(objects[1][0].anchor_points) == 4
-    assert len(objects[2][0].anchor_points) == 3
+    assert len(shapes[0][0].anchor_points) == 4
+    assert len(shapes[1][0].anchor_points) == 4
+    assert len(shapes[2][0].anchor_points) == 3
 
-def test_create_svg_string(heart_path, triangle_path):
-    objects = []
-    objects.append([heart_path])
-    objects.append([triangle_path])
+def test_create_svg_string(heart_path, triangle_path): 
+    heart = BezierShape([heart_path])
+    triangle = BezierShape([triangle_path])
+
+    objects = [heart, triangle]
+
     svg_string = create_svg_string(objects)
 
     assert svg_string == """<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:ev="http://www.w3.org/2001/xml-events" width="100%" height="100%">\
