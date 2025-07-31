@@ -1,7 +1,12 @@
 from bezier_builder.anchor_point import AnchorPoint
 from bezier_builder.vector import Vector
 
+
 class BezierPath:
+    """
+    Class to define a single cubic bezier path with a list of anchor points 
+    rather than bezier segments
+    """
     def __init__(self):
         self._anchor_points = []
         self._is_closed = False
