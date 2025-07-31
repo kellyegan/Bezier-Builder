@@ -3,7 +3,7 @@ import numpy as np
 import os
 from filecmp import cmp
 
-from bezier_builder.svg_converter import parse_svg_path, build_svg_path, parse_svg_file, create_svg_string, save_svg_file
+from bezier_builder.svg_converter import parse_path_string, create_path_string, parse_svg_file, create_svg_string, save_svg_file
 from bezier_builder.bezier_path import BezierPath, BezierShape
 from bezier_builder.vector import Vector
 
@@ -75,7 +75,7 @@ def create_sample_bezier():
 
 def test_move_to_line_to():
     d = "M 10 20 L 30 40"
-    path_list = parse_svg_path(d)
+    path_list = parse_path_string(d)
     assert len(path_list) == 1, "Expected list of one BezierPath"
     bezier_path = path_list[0]
     assert isinstance(bezier_path, BezierPath)
@@ -92,7 +92,7 @@ def test_move_to_line_to():
 
 def test_move_to_line_to_relative():
     d="M 10 20 l 20 20"
-    path_list = parse_svg_path(d)
+    path_list = parse_path_string(d)
     assert len(path_list) == 1, "Expected list of one BezierPath"
     bezier_path = path_list[0]
     assert isinstance(bezier_path, BezierPath)
@@ -109,7 +109,7 @@ def test_move_to_line_to_relative():
 
 def test_cubic_bezier():
     d="M 100 100 C 120 80, 180 80, 200 100"
-    path_list = parse_svg_path(d)
+    path_list = parse_path_string(d)
     assert len(path_list) == 1, "Expected list of one BezierPath"
     bezier_path = path_list[0]
     assert isinstance(bezier_path, BezierPath)
@@ -124,7 +124,7 @@ def test_cubic_bezier():
 
 def test_cubic_bezier_relative():
     d="M 100 100 c 20 -20, 80 -20, 100 0"
-    path_list = parse_svg_path(d)
+    path_list = parse_path_string(d)
     assert len(path_list) == 1, "Expected list of one BezierPath"
     bezier_path = path_list[0]
     assert isinstance(bezier_path, BezierPath)
@@ -139,7 +139,7 @@ def test_cubic_bezier_relative():
 
 def test_quadratic_bezier():
     d="M 40 70 Q 70 91, 100 70"
-    path_list = parse_svg_path(d)
+    path_list = parse_path_string(d)
     assert len(path_list) == 1
     bezier_path = path_list[0]
     assert isinstance(bezier_path, BezierPath)
@@ -153,7 +153,7 @@ def test_quadratic_bezier():
 
 def test_arc_bezier():
     d="M 150, 225 A 100, 100, 0, 0, 1, 194, 119"
-    path_list = parse_svg_path(d)
+    path_list = parse_path_string(d)
     assert len(path_list) == 1
     bezier_path = path_list[0]
     assert isinstance(bezier_path, BezierPath)
@@ -164,7 +164,7 @@ def test_arc_bezier():
 def test_degenerate_arc_bezier():
     """Arc begins and ends at same point should not be created"""
     d="M 100, 100 A 100, 100, 0, 0, 1, 100, 100"
-    path_list = parse_svg_path(d)
+    path_list = parse_path_string(d)
     assert len(path_list) == 1
     bezier_path = path_list[0]
     assert isinstance(bezier_path, BezierPath)
@@ -172,7 +172,7 @@ def test_degenerate_arc_bezier():
 
 def test_quarter_circle_arc_bezier():
     d="M 0,0 A 100,100 0 0 0 100,100"
-    shape = parse_svg_path(d)
+    shape = parse_path_string(d)
     assert len(shape) == 1
     bezier_path = shape[0]
     assert isinstance(bezier_path, BezierPath)
@@ -182,7 +182,7 @@ def test_quarter_circle_arc_bezier():
 
 def test_half_circle_arc_bezier():
     d="M 100 100 A 100 100 0 1 1 300 100"
-    shape = parse_svg_path(d)
+    shape = parse_path_string(d)
     assert len(shape) == 1
     bezier_path = shape[0]
     assert isinstance(bezier_path, BezierPath)
@@ -193,7 +193,7 @@ def test_half_circle_arc_bezier():
 
 def test_full_circle_arc_bezier():
     d="M 100 100 A 100 100 0 1 1 300 100 A 100 100 0 1 1 100 100"
-    shape = parse_svg_path(d)
+    shape = parse_path_string(d)
     assert len(shape) == 1
     bezier_path = shape[0]
     assert isinstance(bezier_path, BezierPath)
@@ -205,7 +205,7 @@ def test_full_circle_arc_bezier():
 
 def test_closed_path():
     d="M 0 0 L 10 0 L 10 10 Z"
-    shape = parse_svg_path(d)
+    shape = parse_path_string(d)
     assert len(shape) == 1, "Expected list of one BezierPath"
     bezier_path = shape[0]
     assert isinstance(bezier_path, BezierPath)
@@ -213,7 +213,7 @@ def test_closed_path():
 
 def test_multiple_subpaths():
     d="M 0 0 L 10 10 M 50 50 L 60 60"
-    shape = parse_svg_path(d)
+    shape = parse_path_string(d)
     assert len(shape) == 2, "Expected list of two BezierPath"
     bezier_path_1 = shape[0]
     assert isinstance(bezier_path_1, BezierPath)
@@ -230,7 +230,7 @@ def test_multiple_subpaths():
 
 def test_symmetric_anchor():
     d="M 10 6 C 12 10, 17 20, 20 18 C 23 16, 24 8, 28 8"
-    shape = parse_svg_path(d)
+    shape = parse_path_string(d)
     assert len(shape) == 1, "Expected list of one BezierPath"
     bezier_path = shape[0]
     assert isinstance(bezier_path, BezierPath)
@@ -243,7 +243,7 @@ def test_symmetric_anchor():
 
 def test_aligned_anchor():
     d="M 10 6 C 12 10, 14 22, 20 18 C 23 16, 24 8, 28 8"
-    shape = parse_svg_path(d)
+    shape = parse_path_string(d)
     bezier_path = shape[0]
     assert len(bezier_path.anchor_points) == 3
     anchor = bezier_path.anchor_points[1]
@@ -251,14 +251,14 @@ def test_aligned_anchor():
 
 def test_closed_smoothly():
     d="M 190, 0 L 100, 110 L 200, 210 L 280, 100 L 190, 0"
-    shape = parse_svg_path(d)
+    shape = parse_path_string(d)
     bezier_path = shape[0]
     assert len(bezier_path.anchor_points) == 4
     assert bezier_path.is_closed == True
 
     # Create a path with a SYMMETRIC transition between start and end
     d="M 95 0 C 75 10, 80 100, 100 105 C 120 110, 140 65, 140 50 C 140 35, 115 -10, 95 0"
-    shape = parse_svg_path(d)
+    shape = parse_path_string(d)
     bezier_path = shape[0]
     assert len(bezier_path.anchor_points) == 3
     assert bezier_path.is_closed == True
@@ -268,7 +268,7 @@ def test_closed_smoothly():
 
     # Create a path with a ALIGNED transition between start and end
     d="M 95 0 C 65 15, 80 100, 100 105 C 140 115, 140 65, 140 50 C 140 25, 115 -10, 95 0"
-    shape = parse_svg_path(d)
+    shape = parse_path_string(d)
     bezier_path = shape[0]
     assert len(bezier_path.anchor_points) == 3
     assert bezier_path.is_closed == True
@@ -278,7 +278,7 @@ def test_closed_smoothly():
 
     # Check SYMMETRIC closed paths on quadratic beziers
     d="M -50 0 Q -50 50 0 50 Q 50, 50 50 0 Q 50 -50 0 -50 Q -50 -50 -50 0"
-    shape = parse_svg_path(d)
+    shape = parse_path_string(d)
     bezier_path = shape[0]
     assert len(bezier_path.anchor_points) == 4
     assert bezier_path.is_closed == True
@@ -288,7 +288,7 @@ def test_closed_smoothly():
 
     # Check ALIGNED closed paths on quadratic beziers
     d="M -50 0 Q -60 30 0 50 Q 30, 60 50 0 Q 60 -30 0 -50 Q -30 -60 -50 0"
-    shape = parse_svg_path(d)
+    shape = parse_path_string(d)
     bezier_path = shape[0]
     assert len(bezier_path.anchor_points) == 4
     assert bezier_path.is_closed == True
@@ -300,25 +300,25 @@ def test_build_line_string():
     path = BezierPath()
     path.create(pos=Vector(10, 20))
     path.create(pos=Vector(30, 40))
-    svg_string = build_svg_path([path])
+    svg_string = create_path_string([path])
     assert svg_string == "M 10,20 L 30,40"
 
 def test_build_curve_string():
     path = BezierPath()
     path.create(pos=Vector(100, 100), handle_out=Vector(20, -20))
     path.create(pos=Vector(200, 100), handle_in=Vector(-20, -20))
-    svg_string = build_svg_path([path])
+    svg_string = create_path_string([path])
     assert svg_string == "M 100,100 C 120,80 180,80 200,100"
 
 def test_closed_path(triangle_path, heart_path):
-    svg_string = build_svg_path([triangle_path])
+    svg_string = create_path_string([triangle_path])
     assert svg_string == "M 50,0 L 100,86.6 L 0,86.6 Z"
 
-    svg_string = build_svg_path([heart_path])
+    svg_string = create_path_string([heart_path])
     assert svg_string == "M 99,40 C 92,70 50,100 50,100 C 50,100 8,70 1,40 C -6,10 15,0 25,0 C 35,0 46,4 50,20 C 54,4 65,0 75,0 C 85,0 106,10 99,40 Z"
 
 def test_multiple_paths(triangle_path, heart_path):
-    svg_string = build_svg_path([triangle_path, heart_path])
+    svg_string = create_path_string([triangle_path, heart_path])
     assert svg_string == "M 50,0 L 100,86.6 L 0,86.6 Z M 99,40 C 92,70 50,100 50,100 C 50,100 8,70 1,40 C -6,10 15,0 25,0 C 35,0 46,4 50,20 C 54,4 65,0 75,0 C 85,0 106,10 99,40 Z"
 
 def test_parse_svg_file_basic_path():
@@ -361,5 +361,4 @@ def test_create_svg_string(heart_path, triangle_path):
 <path d="M 99,40 C 92,70 50,100 50,100 C 50,100 8,70 1,40 C -6,10 15,0 25,0 C 35,0 46,4 50,20 C 54,4 65,0 75,0 C 85,0 106,10 99,40 Z" pathd_loaded="True" stroke="#000000" stroke-width="1.0" fill="none" />\
 <path d="M 50,0 L 100,86.6 L 0,86.6 Z" pathd_loaded="True" stroke="#000000" stroke-width="1.0" fill="none" />\
 </svg>"""
-    pass
 

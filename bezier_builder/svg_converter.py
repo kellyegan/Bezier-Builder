@@ -10,7 +10,7 @@ from bezier_builder.anchor_point import AnchorPoint
 from bezier_builder.vector import Vector
 
 
-def parse_svg_path(d_string: str) -> BezierShape:
+def parse_path_string(d_string: str) -> BezierShape:
     """
     Parses an SVG path 'd' attribute string into a list of BezierPath objects
     using the 'svgelements' library.
@@ -121,7 +121,7 @@ def append_bezier_to_path(handle_1: AnchorPoint, handle_2: AnchorPoint, end: Anc
     current_point.handle_in = handle_2 
     path.append(current_point)
 
-def build_svg_path(shape: BezierShape) -> str:
+def create_path_string(shape: BezierShape) -> str:
     """
     Builds an SVG path 'd' attribute string from a list of BezierPath objects.
 
@@ -187,7 +187,7 @@ def parse_svg_file(file_path: str) -> List[BezierShape]:
     
     for element in svg.elements():
         if isinstance(element, Path) or isinstance(element, Shape):
-            shapes.append(parse_svg_path(element.d(relative=False, transformed=True)))
+            shapes.append(parse_path_string(element.d(relative=False, transformed=True)))
 
     return shapes
 
@@ -199,7 +199,7 @@ def create_svg_string(shapes: List[BezierShape]) -> str:
     
     for object in shapes:
         print(type(object))
-        d_string = build_svg_path(object)
+        d_string = create_path_string(object)
         path = Path(d=d_string, fill="none", stroke="#000")
         svg.append(path)
 
